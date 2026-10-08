@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Company>FolderPilot</Company>
+    <Product>FolderPilot</Product>
+    <Version>0.1.0</Version>
+    <!-- English is the source language; translations ship as JSON string tables, not satellite assemblies. -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <NoWarn>$(NoWarn);CA1416;SYSLIB1054</NoWarn>
+  </PropertyGroup>
+</Project>

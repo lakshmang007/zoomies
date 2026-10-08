@@ -1,0 +1,109 @@
+<UserControl x:Class="FolderPilot.UI.Pages.OrganizePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:FolderPilot.Localization">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+        <Grid Margin="40,32,40,32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+                <ColumnDefinition Width="0*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Style="{StaticResource PageTitle}" Text="{l:T Organize.Title}" />
+                <TextBlock Style="{StaticResource PageSubtitle}" Text="{l:T Organize.Subtitle}" />
+
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource ColumnHeader}" Text="{l:T Organize.Folder}" Margin="0,0,0,6" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="FolderBox" FontSize="14" MinHeight="34" VerticalContentAlignment="Center"
+                                     KeyDown="FolderBox_KeyDown" AutomationProperties.Name="{l:T Organize.Folder}" />
+                            <Button Grid.Column="1" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0"
+                                    Content="{l:T Organize.Browse}" Click="Browse_Click" />
+                        </Grid>
+                        <WrapPanel x:Name="QuickFolders" Margin="0,10,0,0" />
+
+                        <TextBlock Style="{StaticResource ColumnHeader}" Text="{l:T Organize.SortBy}" Margin="0,8,0,6" />
+                        <RadioButton x:Name="ModeByType" GroupName="mode" Content="{l:T Organize.Mode.ByType}" Margin="0,3" />
+                        <RadioButton x:Name="ModeByTypeAndMonth" GroupName="mode" Content="{l:T Organize.Mode.ByTypeAndMonth}" Margin="0,3" />
+                        <RadioButton x:Name="ModeByMonth" GroupName="mode" Content="{l:T Organize.Mode.ByMonth}" Margin="0,3" />
+                        <CheckBox x:Name="KeepShortcuts" Content="{l:T Organize.KeepShortcuts}" IsChecked="True" Margin="0,12,0,0" />
+
+                        <Button x:Name="PreviewButton" Style="{StaticResource PrimaryButton}" Content="{l:T Organize.Preview}"
+                                Margin="0,18,0,0" Click="Preview_Click" />
+                        <TextBlock x:Name="ErrorText" Foreground="{DynamicResource Brush.Danger}" Margin="0,10,0,0" Visibility="Collapsed" />
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="PlanCard" Style="{StaticResource Card}" Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock x:Name="Summary" Style="{StaticResource SectionTitle}" TextWrapping="Wrap" />
+                        <ItemsControl x:Name="CategoryChips" Focusable="False">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border CornerRadius="12" Padding="10,4" Margin="0,0,8,8" Background="{DynamicResource Brush.AccentSoft}">
+                                        <TextBlock Text="{Binding}" FontSize="12" Foreground="{DynamicResource Brush.AccentText}" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock x:Name="SkippedText" Style="{StaticResource Caption}" Margin="0,0,0,12" />
+
+                        <Grid x:Name="ListHeader" Margin="8,0,8,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="90" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{StaticResource ColumnHeader}" Text="{l:T Organize.Column.Name}" />
+                            <TextBlock Grid.Column="1" Style="{StaticResource ColumnHeader}" Text="{l:T Organize.Column.To}" />
+                            <TextBlock Grid.Column="2" Style="{StaticResource ColumnHeader}" Text="{l:T Organize.Column.Size}" HorizontalAlignment="Right" />
+                        </Grid>
+                        <ListBox x:Name="Moves" Style="{StaticResource PlainList}" ItemContainerStyle="{StaticResource StaticRow}" MaxHeight="340">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3*" />
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="90" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource Glyph}" FontSize="14" Text="{Binding Glyph}" Foreground="{DynamicResource Brush.TextSecondary}" />
+                                            <TextBlock Text="{Binding Name}" Margin="10,0,8,0" Foreground="{DynamicResource Brush.Text}" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="{Binding To}" Foreground="{DynamicResource Brush.AccentText}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Size}" Foreground="{DynamicResource Brush.TextSecondary}" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <Button x:Name="ApplyButton" Style="{StaticResource PrimaryButton}" Content="{l:T Organize.Apply}" Margin="0,16,0,0" Click="Apply_Click" />
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="DoneBanner" Style="{StaticResource Banner}" Background="{DynamicResource Brush.SuccessSoft}" Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE73E;" Foreground="{DynamicResource Brush.Success}" />
+                        <TextBlock x:Name="DoneText" Grid.Column="1" Style="{StaticResource Body}" Margin="10,0" VerticalAlignment="Center" />
+                        <Button x:Name="UndoButton" Grid.Column="2" Style="{StaticResource SubtleButton}" Content="{l:T Organize.Undo}" Click="Undo_Click" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
