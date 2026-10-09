@@ -1,6 +1,6 @@
 namespace FolderPilot.Core.Organize;
 
-public enum FileCategory { Documents, Images, Videos, Music, Archives, Installers, Code, Fonts, DiskImages, Other }
+public enum FileCategory { Documents, Images, Videos, Music, Archives, Installers, Code, Models, Fonts, DiskImages, Other }
 
 public static class FileCategories
 {
@@ -57,6 +57,8 @@ public static class FileCategories
         Add(FileCategory.Code,
             "c h cpp hpp cc cs java kt py ipynb js mjs ts tsx jsx html htm css scss json xml yaml yml toml ini " +
             "sql sh bat cmd ps1 psm1 go rs rb php swift dart lua r m vb fs sln slnx csproj gradle");
+        // 3D printing, 3D modelling and CAD
+        Add(FileCategory.Models, "stl obj 3mf fbx blend gltf glb dae ply step stp iges igs gcode bgcode skp dwg dxf f3d f3z max ma mb c4d usdz");
         Add(FileCategory.Fonts, "ttf otf woff woff2 fon");
         Add(FileCategory.DiskImages, "iso img vhd vhdx vmdk");
         return map;

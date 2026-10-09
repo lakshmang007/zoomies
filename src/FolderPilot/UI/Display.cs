@@ -19,6 +19,7 @@ internal static class Display
         FileCategory.Archives => "",
         FileCategory.Installers => "",
         FileCategory.Code => "",
+        FileCategory.Models => "",
         FileCategory.Fonts => "",
         FileCategory.DiskImages => "",
         _ => "",

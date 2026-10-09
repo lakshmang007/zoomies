@@ -60,6 +60,87 @@ public class OrganizeTests
     }
 
     [Fact]
+    public void Three_d_print_files_get_their_own_folder()
+    {
+        using var tree = new TempTree();
+        tree.File("bracket.STL", modifiedUtc: Old);
+        tree.File("benchy.3mf", modifiedUtc: Old);
+
+        var plan = OrganizePlanner.Plan(tree.Root, new OrganizeOptions());
+
+        Assert.All(plan.Moves, m => Assert.Equal(FileCategory.Models, m.Category));
+        Assert.All(plan.Moves, m => Assert.Equal(tree.Path("Models"), Path.GetDirectoryName(m.Destination)));
+    }
+
+    [Fact]
+    public void Custom_folder_names_win_over_the_category_folder()
+    {
+        using var tree = new TempTree();
+        tree.File("bracket.STL", modifiedUtc: Old);
+        tree.File("photo.png", modifiedUtc: Old);
+        tree.File("README", modifiedUtc: Old);
+        var custom = new Dictionary<string, string> { [".stl"] = "3D Prints", [""] = "No Extension" };
+
+        var byType = OrganizePlanner.Plan(tree.Root, new OrganizeOptions { CustomFolders = custom });
+        var byTypeAndMonth = OrganizePlanner.Plan(tree.Root, new OrganizeOptions { Mode = OrganizeMode.ByTypeAndMonth, CustomFolders = custom });
+        var byMonth = OrganizePlanner.Plan(tree.Root, new OrganizeOptions { Mode = OrganizeMode.ByMonth, CustomFolders = custom });
+
+        string Dest(OrganizePlan p, string name) =>
+            Path.GetRelativePath(tree.Root, p.Moves.Single(m => Path.GetFileName(m.Source) == name).Destination);
+        string month = Old.ToLocalTime().ToString("yyyy-MM", System.Globalization.CultureInfo.InvariantCulture);
+        Assert.Equal(@"3D Prints\bracket.STL", Dest(byType, "bracket.STL"));          // extension match ignores case
+        Assert.Equal(@"Images\photo.png", Dest(byType, "photo.png"));                 // others keep the default
+        Assert.Equal(@"No Extension\README", Dest(byType, "README"));
+        Assert.Equal($@"3D Prints\{month}\bracket.STL", Dest(byTypeAndMonth, "bracket.STL"));
+        Assert.Equal($@"{month}\bracket.STL", Dest(byMonth, "bracket.STL"));          // month mode has no type folders
+    }
+
+    [Fact]
+    public void Retarget_updates_destinations_without_rescanning()
+    {
+        using var tree = new TempTree();
+        tree.File("bracket.stl", modifiedUtc: Old);
+        var custom = new Dictionary<string, string>();
+        var options = new OrganizeOptions { CustomFolders = custom };
+        var plan = OrganizePlanner.Plan(tree.Root, options);
+        File.Delete(tree.Path("bracket.stl")); // proves nothing is read from disk again
+
+        custom[".stl"] = "Printer";
+        var retargeted = OrganizePlanner.Retarget(plan, options);
+
+        Assert.Equal(tree.Path(@"Printer\bracket.stl"), retargeted.Moves.Single().Destination);
+        Assert.Equal(tree.Path(@"Models\bracket.stl"), plan.Moves.Single().Destination); // original plan untouched
+    }
+
+    [Fact]
+    public void Invalid_custom_names_fall_back_to_the_default()
+    {
+        using var tree = new TempTree();
+        tree.File("bracket.stl", modifiedUtc: Old);
+
+        var plan = OrganizePlanner.Plan(tree.Root, new OrganizeOptions { CustomFolders = new Dictionary<string, string> { [".stl"] = @"..\..\Windows" } });
+
+        Assert.Equal(tree.Path(@"Models\bracket.stl"), plan.Moves.Single().Destination);
+    }
+
+    [Theory]
+    [InlineData("3D Prints", true)]
+    [InlineData("  Trimmed  ", true)]
+    [InlineData("Imágenes", true)]
+    [InlineData("", false)]
+    [InlineData("   ", false)]
+    [InlineData("a/b", false)]
+    [InlineData(@"a\b", false)]
+    [InlineData("..", false)]
+    [InlineData("name.", false)]
+    [InlineData("what?", false)]
+    [InlineData("CON", false)]
+    [InlineData("nul.txt", false)]
+    [InlineData("Console", true)]
+    public void Folder_names_are_validated(string name, bool valid) =>
+        Assert.Equal(valid, OrganizePlanner.IsValidFolderName(name));
+
+    [Fact]
     public void Execute_then_undo_restores_everything_and_removes_new_folders()
     {
         using var tree = new TempTree();

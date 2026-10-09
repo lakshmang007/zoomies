@@ -37,6 +37,7 @@ public partial class SettingsPage : UserControl
         string version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "";
         VersionText.Text = Loc.F("Settings.Version", version);
         ShowRoots();
+        ShowFolderRules();
 
         _statusTimer.Tick += (_, _) => UpdateStatus();
         Loaded += (_, _) => { UpdateStatus(); _statusTimer.Start(); };
@@ -145,6 +146,28 @@ public partial class SettingsPage : UserControl
             ? Loc.F("Settings.Index.Building", index.ItemsSoFar)
             : Loc.F("Settings.Index.Status", index.ItemCount, Display.Size(index.MemoryBytes), index.LastBuildDuration.TotalSeconds);
         MemoryNow.Text = Loc.F("Settings.Memory.Now", Display.Size(MemoryTrimmer.CurrentUsage()));
+    }
+
+    // ───────────────────────────── organize folder names ─────────────────────────────
+
+    private sealed record FolderRuleRow(string Extension, string Label, string Folder);
+
+    private void ShowFolderRules()
+    {
+        var rows = _app.Settings.OrganizeFolders
+            .OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(kv => new FolderRuleRow(kv.Key, kv.Key.Length == 0 ? Loc.T("Organize.Types.NoExtension") : kv.Key, kv.Value))
+            .ToList();
+        FolderRules.ItemsSource = rows;
+        FolderRulesEmpty.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    private void RemoveFolderRule_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { DataContext: FolderRuleRow row }) return;
+        _app.Settings.OrganizeFolders.Remove(row.Extension);
+        _app.SaveSettings();
+        ShowFolderRules();
     }
 
     // ───────────────────────────── automation & performance ─────────────────────────────

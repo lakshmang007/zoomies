@@ -27,6 +27,9 @@ public sealed class AppSettings
     public int UnusedDays { get; set; } = 180;
     public OrganizeMode OrganizeMode { get; set; } = OrganizeMode.ByType;
 
+    /// <summary>The user's own folder names by file type (".stl" → "3D Prints"), used when organizing by type.</summary>
+    public Dictionary<string, string> OrganizeFolders { get; set; } = [];
+
     /// <summary>Every 15 minutes, sort finished downloads into folders.</summary>
     public bool AutoTidyDownloads { get; set; }
 

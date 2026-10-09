@@ -11,7 +11,9 @@ public abstract class Observable : INotifyPropertyChanged
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        Raise(name);
         return true;
     }
+
+    protected void Raise(string? name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

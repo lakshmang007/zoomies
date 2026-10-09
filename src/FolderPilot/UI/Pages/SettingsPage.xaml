@@ -77,6 +77,35 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Organize: the user's own folder names per file type -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Organize}" />
+                        <TextBlock Style="{StaticResource Caption}" Text="{l:T Settings.Organize.Hint}" Margin="0,0,0,10" />
+                        <ItemsControl x:Name="FolderRules" Focusable="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="130" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text}" />
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Style="{StaticResource Glyph}" FontSize="12" Text="&#xE72A;" Foreground="{DynamicResource Brush.TextTertiary}" />
+                                            <TextBlock Style="{StaticResource Glyph}" FontSize="14" Text="&#xE8B7;" Margin="10,0,0,0" Foreground="{DynamicResource Brush.AccentText}" />
+                                            <TextBlock Text="{Binding Folder}" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text}" />
+                                        </StackPanel>
+                                        <Button Grid.Column="2" Style="{StaticResource SubtleButton}" Content="{l:T Settings.Index.Remove}" Click="RemoveFolderRule_Click" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock x:Name="FolderRulesEmpty" Style="{StaticResource Body}" Text="{l:T Settings.Organize.Empty}" />
+                    </StackPanel>
+                </Border>
+
                 <!-- Automation & performance -->
                 <Border Style="{StaticResource Card}">
                     <StackPanel>

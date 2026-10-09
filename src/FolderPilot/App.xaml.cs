@@ -149,6 +149,7 @@ public partial class App : Application
         switch (Arg(0))
         {
             case "--background": break;
+            case "--quit": Quit(); break; // used by installers and updaters to close the running copy cleanly
             case "--launcher": ShowLauncher(); break;
             case "--organize": ShowHub("organize", Arg(1)); break;
             case "--cleanup": ShowHub("cleanup", Arg(1)); break;
@@ -274,9 +275,15 @@ public partial class App : Application
         string downloads = KnownFolders.Downloads;
         if (!Directory.Exists(downloads)) return;
         string title = Loc.F("Journal.AutoTidy", PathUtil.DisplayName(downloads));
+        var options = new OrganizeOptions
+        {
+            Mode = OrganizeMode.ByType,
+            SkipRecentMinutes = 30,
+            CustomFolders = new Dictionary<string, string>(Settings.OrganizeFolders),
+        };
         var result = await Task.Run(() =>
         {
-            var plan = OrganizePlanner.Plan(downloads, new OrganizeOptions { Mode = OrganizeMode.ByType, SkipRecentMinutes = 30 }, CategoryFolderName);
+            var plan = OrganizePlanner.Plan(downloads, options, CategoryFolderName);
             return plan.Moves.Count == 0 ? default : FileMover.Execute(plan, Journal, title);
         });
         if (result.Moved > 0) Notify(Loc.T("Notify.AutoTidy.Title"), Loc.F("Notify.AutoTidy.Body", result.Moved));
