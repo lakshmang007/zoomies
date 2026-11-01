@@ -55,6 +55,19 @@
                     </StackPanel>
                 </Border>
 
+                <Border x:Name="DoneBanner" Style="{StaticResource Banner}" Background="{DynamicResource Brush.SuccessSoft}" Visibility="Collapsed" Margin="0,0,0,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE73E;" Foreground="{DynamicResource Brush.Success}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                        <TextBlock x:Name="DoneText" Grid.Column="1" Style="{StaticResource Body}" Margin="10,0" VerticalAlignment="Center" />
+                        <Button x:Name="UndoButton" Grid.Column="2" Style="{StaticResource SubtleButton}" Content="{l:T Organize.Undo}" Click="Undo_Click" />
+                    </Grid>
+                </Border>
+
                 <Border x:Name="ResultsCard" Style="{StaticResource Card}" Visibility="Collapsed">
                     <StackPanel>
                         <Grid Margin="0,0,0,8">
@@ -72,6 +85,15 @@
                         <TextBlock x:Name="NoneFound" Style="{StaticResource Body}" Text="{l:T Cleanup.NoneFound}" Visibility="Collapsed" />
 
                         <StackPanel x:Name="ListArea">
+                            <!-- Selection total and the action at the top, so they're reachable without scrolling past the list. -->
+                            <Grid Margin="0,4,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="SelectedText" Style="{StaticResource Body}" VerticalAlignment="Center" />
+                                <Button x:Name="RecycleButton" Grid.Column="1" Style="{StaticResource DangerButton}" Content="{l:T Cleanup.Recycle}" Click="Recycle_Click" />
+                            </Grid>
                             <Grid Margin="8,4,8,6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="32" />
@@ -120,30 +142,10 @@
                                 </ListBox.ItemTemplate>
                             </ListBox>
 
-                            <Grid Margin="0,16,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock x:Name="SelectedText" Style="{StaticResource Body}" VerticalAlignment="Center" />
-                                <Button x:Name="RecycleButton" Grid.Column="1" Style="{StaticResource DangerButton}" Content="{l:T Cleanup.Recycle}" Click="Recycle_Click" />
-                            </Grid>
                         </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <Border x:Name="DoneBanner" Style="{StaticResource Banner}" Background="{DynamicResource Brush.SuccessSoft}" Visibility="Collapsed">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE73E;" Foreground="{DynamicResource Brush.Success}" VerticalAlignment="Top" Margin="0,2,0,0" />
-                        <TextBlock x:Name="DoneText" Grid.Column="1" Style="{StaticResource Body}" Margin="10,0" VerticalAlignment="Center" />
-                        <Button x:Name="UndoButton" Grid.Column="2" Style="{StaticResource SubtleButton}" Content="{l:T Organize.Undo}" Click="Undo_Click" />
-                    </Grid>
-                </Border>
             </StackPanel>
         </Grid>
     </ScrollViewer>

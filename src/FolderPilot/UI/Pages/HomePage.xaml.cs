@@ -11,7 +11,10 @@ using FolderPilot.Services;
 
 namespace FolderPilot.UI.Pages;
 
-public sealed record SuggestionCard(string Glyph, string Title, string Body, string ActionText, Action Run);
+public sealed record SuggestionCard(string Glyph, string Title, string Body, string ActionText, Action Run)
+{
+    public override string ToString() => $"{Title}. {Body}";
+}
 
 public partial class HomePage : UserControl
 {

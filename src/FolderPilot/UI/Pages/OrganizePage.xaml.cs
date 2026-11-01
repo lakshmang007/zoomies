@@ -11,12 +11,29 @@ using Microsoft.Win32;
 
 namespace FolderPilot.UI.Pages;
 
-public sealed record MoveRow(string Glyph, string Name, string To, string Size);
+public sealed record MoveRow(string Glyph, string Name, string To, string Size)
+{
+    /// <summary>What screen readers announce for the row.</summary>
+    public override string ToString() => $"{Name}, {To}, {Size}";
+}
 
 /// <summary>One file type in the preview, with the folder those files will go to. The user can rename that folder.</summary>
 public sealed class TypeRow : Observable
 {
     private string _folder = "";
+    private Visibility _rowVisibility = Visibility.Visible;
+
+    /// <summary>
+    /// Rows that don't match the search are hidden rather than removed: rebuilding the list would leave
+    /// screen readers (UI Automation) unable to reach the folder boxes in the new rows.
+    /// </summary>
+    public Visibility RowVisibility
+    {
+        get => _rowVisibility;
+        set => Set(ref _rowVisibility, value);
+    }
+
+    public override string ToString() => $"{Label}, {CountText}, {SizeText}, {Folder}";
 
     public required string Extension { get; init; }
     public required string Label { get; init; }
@@ -174,8 +191,14 @@ public partial class OrganizePage : UserControl
         ShowTypeRows();
     }
 
-    private void ShowTypeRows() =>
-        TypeRows.ItemsSource = _typeRows.Where(r => _filter.Length == 0 || r.Label.Contains(_filter, StringComparison.CurrentCultureIgnoreCase)).ToList();
+    private void ShowTypeRows()
+    {
+        if (!ReferenceEquals(TypeRows.ItemsSource, _typeRows)) TypeRows.ItemsSource = _typeRows;
+        foreach (var row in _typeRows)
+            row.RowVisibility = _filter.Length == 0 || row.Label.Contains(_filter, StringComparison.CurrentCultureIgnoreCase)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+    }
 
     private void TypeRow_Changed(TypeRow row)
     {

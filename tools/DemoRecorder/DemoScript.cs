@@ -19,10 +19,23 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
     private readonly List<IntPtr> _opened = [];
     private IntPtr _explorer;
     private IntPtr _hub;
+    private PrivacyGuard? _guard;
+    private string _hotkeyText = "Ctrl + Alt + Space";
+    private ushort[] _hotkeyKeys = [Ctrl, Alt, Space];
 
     public void Run()
     {
+        // Fair warning before taking over the mouse and keyboard.
+        for (int seconds = options.CountdownSeconds; seconds > 0; seconds--)
+        {
+            Caption($"Demo recording starts in {seconds}…", "Please don't touch the mouse or keyboard for about 2 minutes");
+            Thread.Sleep(1000);
+        }
+        OnUi(overlay.HideCaption);
+
         bool realAppWasRunning = StopRunningFolderPilot();
+        UseFreeHotkey();
+        _guard = ui.Invoke(() => new PrivacyGuard());
         Shell("MinimizeAll");
         Thread.Sleep(800);
         ScreenRecorder? recorder = null;
@@ -30,6 +43,9 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
         {
             StartDemoApp();
             OpenExplorer(Path.Combine(options.Root, "Downloads"));
+            // Hide the real desktop (wallpaper, widgets) and Explorer's list of the user's own folders.
+            OnUi(() => overlay.ShowStage(options.ScreenWidth, options.ScreenHeight, _explorer));
+            MaskNavigationPane(_explorer);
             SetCursorAway();
 
             recorder = new ScreenRecorder(options.Ffmpeg, options.Output, options.ScreenWidth, options.ScreenHeight, options.Encoder);
@@ -50,7 +66,7 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
         finally
         {
             recorder?.Stop();
-            OnUi(overlay.CloseAll);
+            OnUi(() => { _guard?.Stop(); overlay.CloseAll(); });
             CleanUp(realAppWasRunning);
         }
     }
@@ -59,7 +75,7 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
 
     private void SceneFind()
     {
-        Caption("Find any folder in a keystroke", "Press Ctrl + Alt + Space anywhere and type a few letters");
+        Caption("Find any folder in a keystroke", $"Press {_hotkeyText} anywhere and type a few letters");
         Thread.Sleep(1600);
         Focus(_explorer);
         Jump("final");
@@ -73,25 +89,33 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
     private void SceneSaveDialog()
     {
         Caption("Works in every app's Save and Open dialogs", "No more clicking through folders to save a file");
-        Process.Start(new ProcessStartInfo("explorer.exe", @"shell:AppsFolder\Microsoft.Paint_8wekyb3d8bbwe!App") { UseShellExecute = false })?.Dispose();
-        IntPtr paint = Ui.WaitWindow(h => IsNew(h) && Ui.TitleOf(h).EndsWith("Paint", StringComparison.Ordinal), "Paint", 15000);
-        _opened.Add(paint);
-        Ui.Place(paint, 330, 70, 1260, 860);
-        Thread.Sleep(1400);
-        Focus(paint);
+        // A stand-in notes app, so the Save dialog opens inside the sample PC rather than the real user's last folder.
+        IntPtr notes = ui.Invoke(() =>
+        {
+            var window = new NotesWindow(Path.Combine(options.Root, "Documents")) { Left = 330, Top = 70, Width = 1100, Height = 760 };
+            window.Show();
+            return new System.Windows.Interop.WindowInteropHelper(window).Handle;
+        });
+        Thread.Sleep(1300);
+        Focus(notes);
         ShowKeys("Ctrl + S");
         Chord(Ctrl, S);
         IntPtr dialog = Ui.WaitWindow(h => Ui.ClassOf(h) == "#32770"
             && Ui.TitleOf(h).StartsWith("Save", StringComparison.OrdinalIgnoreCase), "Save dialog", 8000);
-        Thread.Sleep(1400);
-        Jump("screens", expectedForeground: dialog);
-        Thread.Sleep(2600);
+        Ui.Place(dialog, 360, 150, 1000, 620);
+        Thread.Sleep(500);
+        MaskNavigationPane(dialog);
+        Thread.Sleep(1300);
+        Jump("invoices", expectedForeground: dialog);
+        Thread.Sleep(2800);
         ShowKeys("Esc");
         Press(Escape);
+        Ui.WaitGone(dialog);
+        OnUi(() => _guard!.Remove(dialog));
         Thread.Sleep(500);
-        Ui.Close(paint);
-        Ui.WaitGone(paint);
-        Thread.Sleep(700);
+        Ui.Close(notes);
+        Ui.WaitGone(notes);
+        Thread.Sleep(600);
     }
 
     private void SceneOrganize()
@@ -164,8 +188,8 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
 
     private void Hotkey()
     {
-        ShowKeys("Ctrl + Alt + Space");
-        Chord(Ctrl, Alt, Space);
+        ShowKeys(_hotkeyText);
+        Chord(_hotkeyKeys);
         IntPtr launcher = Ui.WaitWindow(h => Ui.TitleOf(h) == LauncherTitle, "Quick Jump", 4000);
         EnsureForeground(launcher, "Quick Jump");
         Thread.Sleep(450);
@@ -201,6 +225,49 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
             Thread.Sleep(100);
         }
         throw new InvalidOperationException($"Stopped: '{what}' is not in front, so typing could reach another app.");
+    }
+
+    /// <summary>
+    /// Another app may own FolderPilot's default shortcut (the Claude desktop app uses Ctrl+Alt+Space).
+    /// Pick the first one that is actually free and give it to the demo copy of FolderPilot.
+    /// </summary>
+    private void UseFreeHotkey()
+    {
+        (string Text, string Setting, uint Mods, uint Vk, ushort[] Keys)[] candidates =
+        [
+            ("Ctrl + Alt + Space", "Ctrl+Alt+Space", 0x2 | 0x1, 0x20, [Ctrl, Alt, Space]),
+            ("Ctrl + Shift + Space", "Ctrl+Shift+Space", 0x2 | 0x4, 0x20, [Ctrl, Shift, Space]),
+            ("Alt + Shift + F", "Alt+Shift+F", 0x1 | 0x4, 0x46, [Alt, Shift, F]),
+        ];
+        foreach (var c in candidates)
+        {
+            if (!RegisterHotKey(IntPtr.Zero, 0x7A11, c.Mods | 0x4000, c.Vk)) continue;
+            UnregisterHotKey(IntPtr.Zero, 0x7A11);
+            (_hotkeyText, _hotkeyKeys) = (c.Text, c.Keys);
+            DemoData.SetHotkey(options.Root, c.Setting);
+            return;
+        }
+        throw new InvalidOperationException("No free keyboard shortcut for Quick Jump.");
+    }
+
+    /// <summary>Covers a window's navigation pane (which lists the real user's folders, OneDrive and devices) with its own background colour.</summary>
+    private void MaskNavigationPane(IntPtr window)
+    {
+        // Explorer windows and file dialogs have exactly one tree control: the navigation pane.
+        AutomationElement tree;
+        try { tree = Ui.WaitElement(window, _ => true, "navigation pane", 6000, ControlType.Tree); }
+        catch (TimeoutException) { throw new InvalidOperationException("Stopped: could not find the navigation pane to hide it."); }
+        var r = tree.Cached.BoundingRectangle;
+        var color = PixelAt((int)r.Left + 4, (int)r.Bottom - 4);
+        OnUi(() => _guard!.Add(window, new System.Windows.Rect(r.Left, r.Top, r.Width, r.Height), color));
+    }
+
+    private static System.Windows.Media.Color PixelAt(int x, int y)
+    {
+        IntPtr dc = GetDC(IntPtr.Zero);
+        uint c = GetPixel(dc, x, y);
+        ReleaseDC(IntPtr.Zero, dc);
+        return System.Windows.Media.Color.FromRgb((byte)(c & 0xFF), (byte)((c >> 8) & 0xFF), (byte)((c >> 16) & 0xFF));
     }
 
     private void Caption(string title, string subtitle) => OnUi(() => overlay.Caption(title, subtitle));
@@ -281,4 +348,9 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern IntPtr FindWindow(string? cls, string? title);
     [DllImport("user32.dll")] private static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
     [DllImport("user32.dll")] private static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
+    [DllImport("user32.dll")] private static extern bool RegisterHotKey(IntPtr hwnd, int id, uint mods, uint vk);
+    [DllImport("user32.dll")] private static extern bool UnregisterHotKey(IntPtr hwnd, int id);
+    [DllImport("user32.dll")] private static extern IntPtr GetDC(IntPtr hwnd);
+    [DllImport("user32.dll")] private static extern int ReleaseDC(IntPtr hwnd, IntPtr dc);
+    [DllImport("gdi32.dll")] private static extern uint GetPixel(IntPtr dc, int x, int y);
 }

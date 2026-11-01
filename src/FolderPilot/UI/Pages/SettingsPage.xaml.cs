@@ -150,7 +150,10 @@ public partial class SettingsPage : UserControl
 
     // ───────────────────────────── organize folder names ─────────────────────────────
 
-    private sealed record FolderRuleRow(string Extension, string Label, string Folder);
+    private sealed record FolderRuleRow(string Extension, string Label, string Folder)
+    {
+        public override string ToString() => $"{Label}, {Folder}";
+    }
 
     private void ShowFolderRules()
     {

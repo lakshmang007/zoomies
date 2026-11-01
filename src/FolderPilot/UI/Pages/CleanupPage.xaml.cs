@@ -42,6 +42,9 @@ public sealed class CleanupRow : Observable
         get => _isChecked;
         set => Set(ref _isChecked, value);
     }
+
+    /// <summary>What screen readers announce for the row.</summary>
+    public override string ToString() => $"{Name}, {Folder}, {SizeText}, {LastUsedText}";
 }
 
 public partial class CleanupPage : UserControl

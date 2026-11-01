@@ -77,6 +77,9 @@ internal static class Ui
     public static void Click(AutomationElement element, int moveMs = 650)
     {
         var r = element.Cached.BoundingRectangle;
+        // Controls scrolled below the window still report a position; clicking there would hit something else.
+        if (r.Top + r.Height / 2 > GetSystemMetrics(1) - 50 || r.Left + r.Width / 2 > GetSystemMetrics(0))
+            throw new InvalidOperationException($"Stopped: '{element.Cached.Name}' is outside the visible screen.");
         Input.ClickAt((int)(r.Left + r.Width / 2), (int)(r.Top + r.Height / 2), moveMs);
     }
 
@@ -119,4 +122,5 @@ internal static class Ui
     [DllImport("user32.dll")] private static extern bool SetWindowPos(IntPtr hwnd, IntPtr after, int x, int y, int cx, int cy, uint flags);
     [DllImport("user32.dll")] private static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr w, IntPtr l);
     [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] private static extern int GetSystemMetrics(int index);
 }

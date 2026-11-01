@@ -41,7 +41,15 @@
 
                 <Border x:Name="PlanCard" Style="{StaticResource Card}" Visibility="Collapsed">
                     <StackPanel>
-                        <TextBlock x:Name="Summary" Style="{StaticResource SectionTitle}" TextWrapping="Wrap" />
+                        <!-- The action sits next to the summary it applies to, so it's reachable without scrolling. -->
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="Summary" Style="{StaticResource SectionTitle}" TextWrapping="Wrap" Margin="0,0,16,0" VerticalAlignment="Center" />
+                            <Button x:Name="ApplyButton" Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="{l:T Organize.Apply}" Click="Apply_Click" />
+                        </Grid>
                         <ItemsControl x:Name="CategoryChips" Focusable="False">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
@@ -86,6 +94,11 @@
                                 </Grid>
                                 <ScrollViewer MaxHeight="232" VerticalScrollBarVisibility="Auto" Focusable="False">
                                     <ItemsControl x:Name="TypeRows" Focusable="False">
+                                        <ItemsControl.ItemContainerStyle>
+                                            <Style TargetType="ContentPresenter">
+                                                <Setter Property="Visibility" Value="{Binding RowVisibility}" />
+                                            </Style>
+                                        </ItemsControl.ItemContainerStyle>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid Margin="0,3">
@@ -111,6 +124,7 @@
                                 </ScrollViewer>
                                 <TextBlock x:Name="TypeError" Style="{StaticResource Caption}" Foreground="{DynamicResource Brush.Danger}" Margin="0,8,0,0"
                                            Text="{l:T Organize.Types.Invalid}" Visibility="Collapsed" />
+                                <CheckBox x:Name="RememberBox" Content="{l:T Organize.Remember}" IsChecked="True" Margin="0,12,0,0" />
                             </StackPanel>
                         </Border>
 
@@ -144,8 +158,6 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                         <TextBlock x:Name="NoMatchText" Style="{StaticResource Caption}" FontSize="13" Margin="8,4,0,0" Visibility="Collapsed" />
-                        <CheckBox x:Name="RememberBox" Content="{l:T Organize.Remember}" IsChecked="True" Margin="0,14,0,0" />
-                        <Button x:Name="ApplyButton" Style="{StaticResource PrimaryButton}" Content="{l:T Organize.Apply}" Margin="0,14,0,0" Click="Apply_Click" />
                     </StackPanel>
                 </Border>
 

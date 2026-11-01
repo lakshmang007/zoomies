@@ -126,6 +126,11 @@ internal static class DemoData
 
     private static readonly List<(string Path, DateTime Accessed)> AccessTimes = [];
 
+    /// <summary>Gives the demo copy of FolderPilot a Quick Jump shortcut that no other app on this PC is using.</summary>
+    public static void SetHotkey(string root, string hotkey) =>
+        JsonFile.Write(Path.Combine(root, ".folderpilot", "settings.json"),
+            new AppSettings { HasCompletedWelcome = true, Hotkey = hotkey }, CoreJsonContext.Default.AppSettings);
+
     /// <summary>Settings and "learned" folders for the demo copy of FolderPilot, as if it had been used for a few weeks.</summary>
     private static void WriteAppData(string root)
     {

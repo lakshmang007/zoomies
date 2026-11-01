@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace DemoRecorder;
 
-internal sealed record Options(string Root, string App, string Output, string Ffmpeg, string Encoder, int ScreenWidth, int ScreenHeight);
+internal sealed record Options(string Root, string App, string Output, string Ffmpeg, string Encoder, int ScreenWidth, int ScreenHeight, int CountdownSeconds);
 
 /// <summary>
 /// Usage:
@@ -32,9 +32,59 @@ internal static class Program
             Console.WriteLine($"Demo PC created in {root}");
             return 0;
         }
+        if (command == "probe")
+        {
+            // Diagnostic: opens the Organize preview in the demo copy and lists what UI Automation can see. No input is sent.
+            string appExe = Arg("--app", Path.Combine(repo, @"src\FolderPilot\bin\Debug\net10.0-windows\FolderPilot.exe"));
+            DemoData.Create(root);
+            var start = new System.Diagnostics.ProcessStartInfo(appExe, $"--organize \"{Path.Combine(root, "Downloads")}\"") { UseShellExecute = false };
+            start.Environment["FOLDERPILOT_DEMO_ROOT"] = root;
+            System.Diagnostics.Process.Start(start)?.Dispose();
+            IntPtr hub = Ui.WaitWindow(h => Ui.TitleOf(h) == "FolderPilot" && Ui.ClassOf(h).StartsWith("HwndWrapper", StringComparison.Ordinal), "hub", 15000);
+            Thread.Sleep(3000);
+            if (args.Contains("--repreview"))
+            {
+                // A second preview rebuilds the type list, the case that used to hide the folder boxes from UI Automation.
+                var preview = Ui.WaitElement(hub, "Preview", System.Windows.Automation.ControlType.Button, 5000);
+                ((System.Windows.Automation.InvokePattern)preview.GetCurrentPattern(System.Windows.Automation.InvokePattern.Pattern)).Invoke();
+                Thread.Sleep(2000);
+            }
+            if (Array.IndexOf(args, "--search") is int si and >= 0 && si + 1 < args.Length)
+            {
+                var box = Ui.WaitElement(hub, n => n.StartsWith("Find a file type", StringComparison.Ordinal), "search", 5000, System.Windows.Automation.ControlType.Edit);
+                ((System.Windows.Automation.ValuePattern)box.GetCurrentPattern(System.Windows.Automation.ValuePattern.Pattern)).SetValue(args[si + 1]);
+                Thread.Sleep(1500);
+                try
+                {
+                    var found = Ui.WaitElement(hub, "Folder for .stl files", System.Windows.Automation.ControlType.Edit, 4000);
+                    Console.WriteLine($"FOUND after search: {found.Cached.BoundingRectangle} offscreen={found.Cached.IsOffscreen}");
+                }
+                catch (TimeoutException) { Console.WriteLine("NOT FOUND after search (with on-screen filter)"); }
+            }
+            var cache = new System.Windows.Automation.CacheRequest();
+            cache.Add(System.Windows.Automation.AutomationElement.NameProperty);
+            cache.Add(System.Windows.Automation.AutomationElement.ControlTypeProperty);
+            using (cache.Activate())
+            {
+                var all = System.Windows.Automation.AutomationElement.FromHandle(hub)
+                    .FindAll(System.Windows.Automation.TreeScope.Descendants, System.Windows.Automation.Condition.TrueCondition);
+                foreach (System.Windows.Automation.AutomationElement e in all)
+                {
+                    var c = e.Cached;
+                    if (c.ControlType == System.Windows.Automation.ControlType.Edit || c.ControlType == System.Windows.Automation.ControlType.Button
+                        || c.ControlType == System.Windows.Automation.ControlType.DataItem || c.ControlType == System.Windows.Automation.ControlType.ListItem)
+                        Console.WriteLine($"{c.ControlType.ProgrammaticName,-24} {c.Name}");
+                }
+                Console.WriteLine($"total elements: {all.Count}");
+            }
+            var quit = new System.Diagnostics.ProcessStartInfo(appExe, "--quit") { UseShellExecute = false };
+            quit.Environment["FOLDERPILOT_DEMO_ROOT"] = root;
+            System.Diagnostics.Process.Start(quit)?.WaitForExit(10000);
+            return 0;
+        }
         if (command != "record")
         {
-            Console.Error.WriteLine("Commands: setup, record");
+            Console.Error.WriteLine("Commands: setup, record, probe");
             return 2;
         }
 
@@ -51,7 +101,8 @@ internal static class Program
             Ffmpeg: ffmpeg,
             Encoder: Arg("--encoder", "h264_nvenc"),
             ScreenWidth: GetSystemMetrics(0),
-            ScreenHeight: GetSystemMetrics(1));
+            ScreenHeight: GetSystemMetrics(1),
+            CountdownSeconds: int.Parse(Arg("--countdown", "10")));
 
         DemoData.Create(root); // fresh files every take, since the demo moves some of them
         var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };

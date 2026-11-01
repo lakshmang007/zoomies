@@ -7,7 +7,10 @@ using FolderPilot.Localization;
 
 namespace FolderPilot.UI.Pages;
 
-public sealed record WorkspaceRow(Workspace Source, string Name, string Detail, string Folders);
+public sealed record WorkspaceRow(Workspace Source, string Name, string Detail, string Folders)
+{
+    public override string ToString() => $"{Name}, {Detail}";
+}
 
 public partial class WorkspacesPage : UserControl
 {

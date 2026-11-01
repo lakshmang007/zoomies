@@ -24,6 +24,8 @@ public sealed class ResultItem
     public bool IsDirectory { get; init; }
     public Action? Run { get; init; }
     public double Score { get; init; }
+
+    public override string ToString() => Subtitle.Length == 0 ? Title : $"{Title}, {Subtitle}";
 }
 
 /// <summary>

@@ -5,7 +5,7 @@ namespace DemoRecorder;
 /// <summary>Keyboard and mouse input that looks human on video: eased mouse movement and typing with small pauses.</summary>
 internal static class Input
 {
-    public const ushort Ctrl = 0x11, Alt = 0x12, Shift = 0x10, Enter = 0x0D, Escape = 0x1B, Space = 0x20, Tab = 0x09, F4 = 0x73, A = 0x41, S = 0x53;
+    public const ushort Ctrl = 0x11, Alt = 0x12, Shift = 0x10, Enter = 0x0D, Escape = 0x1B, Space = 0x20, Tab = 0x09, F4 = 0x73, A = 0x41, F = 0x46, S = 0x53;
     private static readonly Random Jitter = new(7);
 
     public static void Chord(params ushort[] keys)

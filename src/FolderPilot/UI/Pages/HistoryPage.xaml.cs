@@ -5,7 +5,10 @@ using FolderPilot.Localization;
 
 namespace FolderPilot.UI.Pages;
 
-public sealed record HistoryRow(Guid Id, string Glyph, string Title, string Detail, Visibility UndoVisibility, Visibility UndoneVisibility);
+public sealed record HistoryRow(Guid Id, string Glyph, string Title, string Detail, Visibility UndoVisibility, Visibility UndoneVisibility)
+{
+    public override string ToString() => $"{Title}, {Detail}";
+}
 
 public partial class HistoryPage : UserControl
 {

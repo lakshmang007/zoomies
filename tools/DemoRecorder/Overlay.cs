@@ -34,7 +34,7 @@ internal sealed class Overlay
             CornerRadius = new CornerRadius(16),
             Padding = new Thickness(30, 16, 30, 18),
             Child = new StackPanel { Children = { _title, _subtitle } },
-        }, screenWidth, screenHeight, bottom: 130);
+        }, screenWidth, screenHeight, bottom: 96);
 
         _keys = Layer(new Border
         {
@@ -42,7 +42,7 @@ internal sealed class Overlay
             CornerRadius = new CornerRadius(10),
             Padding = new Thickness(18, 8, 18, 9),
             Child = _keysText,
-        }, screenWidth, screenHeight, bottom: 250);
+        }, screenWidth, screenHeight, bottom: 200);
 
         var cardContent = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
         if (logoPath is not null && File.Exists(logoPath))
@@ -103,6 +103,33 @@ internal sealed class Overlay
         _caption.Close();
         _keys.Close();
         _card.Close();
+        foreach (var w in _extra.ToList()) w.Close();
+        _extra.Clear();
+    }
+
+    private readonly List<Window> _extra = [];
+
+    /// <summary>
+    /// A plain backdrop over the user's wallpaper and desktop widgets, placed directly beneath
+    /// <paramref name="below"/> so the demo windows stay on top of it.
+    /// </summary>
+    public void ShowStage(int screenWidth, int screenHeight, IntPtr below)
+    {
+        var stage = new Window
+        {
+            WindowStyle = WindowStyle.None, ResizeMode = ResizeMode.NoResize, ShowInTaskbar = false, ShowActivated = false,
+            Left = 0, Top = 0, Width = screenWidth, Height = screenHeight,
+            Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FF0B1220"), (Color)ColorConverter.ConvertFromString("#FF1E3A8A"), 35),
+        };
+        stage.SourceInitialized += (_, _) =>
+        {
+            IntPtr hwnd = new WindowInteropHelper(stage).Handle;
+            SetWindowLong(hwnd, -20, GetWindowLong(hwnd, -20) | 0x08000000 | 0x80); // never takes focus
+        };
+        stage.Show();
+        IntPtr handle = new WindowInteropHelper(stage).Handle;
+        SetWindowPos(handle, below, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010); // NOSIZE | NOMOVE | NOACTIVATE
+        _extra.Add(stage);
     }
 
     // ───────────────────────────── helpers ─────────────────────────────
@@ -152,6 +179,7 @@ internal sealed class Overlay
 
     private static SolidColorBrush Brush(string hex) => new((Color)ColorConverter.ConvertFromString(hex));
 
+    [DllImport("user32.dll")] private static extern bool SetWindowPos(IntPtr hwnd, IntPtr after, int x, int y, int cx, int cy, uint flags);
     [DllImport("user32.dll")] private static extern int GetWindowLong(IntPtr hwnd, int index);
     [DllImport("user32.dll")] private static extern int SetWindowLong(IntPtr hwnd, int index, int value);
 }
