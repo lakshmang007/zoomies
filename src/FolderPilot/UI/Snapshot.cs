@@ -18,7 +18,7 @@ internal static class Snapshot
         {
             Directory.CreateDirectory(outputDir);
             app.InitializeCore();
-            Themes.ThemeManager.Apply(forceDark: dark);
+            Themes.ThemeManager.Apply(dark ? Themes.ThemeManager.Midnight : Themes.ThemeManager.Sand);
             string suffix = dark ? "dark" : "light";
 
             app.ApplyIndexSettings(TimeSpan.Zero);

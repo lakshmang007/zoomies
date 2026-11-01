@@ -76,7 +76,7 @@
 
                         <!-- Where each file type goes: the user can rename any of these folders -->
                         <Border x:Name="TypesPanel" CornerRadius="8" Padding="14,12" Margin="0,0,0,14"
-                                Background="{DynamicResource Brush.Background}" BorderBrush="{DynamicResource Brush.CardBorder}" BorderThickness="1">
+                                Background="{DynamicResource Brush.Inset}" BorderBrush="{DynamicResource Brush.CardBorder}" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Style="{StaticResource SectionTitle}" FontSize="14" Margin="0,0,0,2" Text="{l:T Organize.Types.Title}" />
                                 <TextBlock Style="{StaticResource Caption}" Margin="0,0,0,10" Text="{l:T Organize.Types.Hint}" />

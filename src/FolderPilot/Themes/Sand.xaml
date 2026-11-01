@@ -1,0 +1,44 @@
+<!-- Sand: the light theme. Warm, neutral beige with a caramel accent. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Accent shades for the built-in (Fluent) controls are derived from this colour. -->
+    <Color x:Key="Color.Accent">#8A5A2E</Color>
+    <Color x:Key="Color.Caption">#F8F3EB</Color>
+    <Color x:Key="Color.CaptionText">#2B2520</Color>
+
+    <LinearGradientBrush x:Key="Brush.Background" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#F8F3EB" Offset="0" />
+        <GradientStop Color="#F2EADD" Offset="0.55" />
+        <GradientStop Color="#EBE0CE" Offset="1" />
+    </LinearGradientBrush>
+    <!-- Translucent, so the background gradient carries through the sidebar. -->
+    <SolidColorBrush x:Key="Brush.Sidebar" Color="#66FFFFFF" />
+    <SolidColorBrush x:Key="Brush.Inset" Color="#F6F0E7" />
+    <SolidColorBrush x:Key="Brush.Card" Color="#FFFDF9" />
+    <SolidColorBrush x:Key="Brush.CardBorder" Color="#E6DACA" />
+    <SolidColorBrush x:Key="Brush.Divider" Color="#E5DACB" />
+    <SolidColorBrush x:Key="Brush.Text" Color="#2B2520" />
+    <SolidColorBrush x:Key="Brush.TextSecondary" Color="#675D52" />
+    <SolidColorBrush x:Key="Brush.TextTertiary" Color="#8F8376" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="#8A5A2E" />
+    <SolidColorBrush x:Key="Brush.AccentHover" Color="#7A4F28" />
+    <SolidColorBrush x:Key="Brush.AccentPressed" Color="#6A4423" />
+    <SolidColorBrush x:Key="Brush.OnAccent" Color="#FFFDF9" />
+    <SolidColorBrush x:Key="Brush.AccentSoft" Color="#F1E6D6" />
+    <SolidColorBrush x:Key="Brush.AccentText" Color="#764B24" />
+    <SolidColorBrush x:Key="Brush.Hover" Color="#105A4632" />
+    <SolidColorBrush x:Key="Brush.Pressed" Color="#1C5A4632" />
+    <SolidColorBrush x:Key="Brush.Selected" Color="#ECE0CD" />
+    <SolidColorBrush x:Key="Brush.Input" Color="#FFFDF9" />
+    <SolidColorBrush x:Key="Brush.InputBorder" Color="#D8CAB7" />
+    <SolidColorBrush x:Key="Brush.Danger" Color="#B3261E" />
+    <SolidColorBrush x:Key="Brush.DangerHover" Color="#9C2019" />
+    <SolidColorBrush x:Key="Brush.DangerSoft" Color="#F8E2DD" />
+    <SolidColorBrush x:Key="Brush.Success" Color="#3E7A39" />
+    <SolidColorBrush x:Key="Brush.SuccessSoft" Color="#E6EEDB" />
+    <SolidColorBrush x:Key="Brush.Warning" Color="#8A5A00" />
+    <SolidColorBrush x:Key="Brush.WarningSoft" Color="#F7EBD1" />
+    <SolidColorBrush x:Key="Brush.Launcher" Color="#FFFDF9" />
+    <SolidColorBrush x:Key="Brush.LauncherBorder" Color="#D6C7B2" />
+    <SolidColorBrush x:Key="Brush.SwitchOff" Color="#8F8376" />
+</ResourceDictionary>

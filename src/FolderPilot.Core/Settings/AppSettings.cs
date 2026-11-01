@@ -36,6 +36,9 @@ public sealed class AppSettings
     /// <summary>Give memory back to Windows while FolderPilot sits idle in the tray.</summary>
     public bool LowMemoryMode { get; set; } = true;
 
+    /// <summary>"system" (Sand in light mode, Midnight in dark mode), "sand" or "midnight".</summary>
+    public string Theme { get; set; } = "system";
+
     /// <summary>"auto" follows Windows; otherwise a culture name such as "es" or "hi".</summary>
     public string Language { get; set; } = "auto";
 

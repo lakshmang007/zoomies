@@ -9,6 +9,7 @@ using FolderPilot.Core.Indexing;
 using FolderPilot.Interop;
 using FolderPilot.Localization;
 using FolderPilot.Services;
+using FolderPilot.Themes;
 using Microsoft.Win32;
 
 namespace FolderPilot.UI.Pages;
@@ -19,11 +20,20 @@ public partial class SettingsPage : UserControl
     private readonly List<string> _roots;
     private readonly DispatcherTimer _statusTimer = new() { Interval = TimeSpan.FromSeconds(2) };
     private Hotkey? _candidate;
+    private bool _loadingTheme;
 
     public SettingsPage()
     {
         InitializeComponent();
         var s = _app.Settings;
+        _loadingTheme = true;
+        (s.Theme switch
+        {
+            ThemeManager.Sand => ThemeSand,
+            ThemeManager.Midnight => ThemeMidnight,
+            _ => ThemeSystem,
+        }).IsChecked = true;
+        _loadingTheme = false;
         HotkeyBox.Text = _app.HotkeyText;
         LearnSwitch.IsChecked = s.LearnFromExplorer;
         StartupSwitch.IsChecked = WindowsIntegration.StartsWithWindows;
@@ -42,6 +52,17 @@ public partial class SettingsPage : UserControl
         _statusTimer.Tick += (_, _) => UpdateStatus();
         Loaded += (_, _) => { UpdateStatus(); _statusTimer.Start(); };
         Unloaded += (_, _) => _statusTimer.Stop();
+    }
+
+    // ───────────────────────────── appearance ─────────────────────────────
+
+    /// <summary>Applies the theme straight away; every open window updates live.</summary>
+    private void Theme_Checked(object sender, RoutedEventArgs e)
+    {
+        if (_loadingTheme || sender is not RadioButton { Tag: string theme } || theme == _app.Settings.Theme) return;
+        _app.Settings.Theme = theme;
+        _app.SaveSettings();
+        ThemeManager.Apply(theme);
     }
 
     // ───────────────────────────── shortcut ─────────────────────────────

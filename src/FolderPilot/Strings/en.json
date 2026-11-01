@@ -195,6 +195,11 @@
   "History.UndoPartial": "Restored {0:N0} items. {1:N0} couldn't be restored — they may have been moved, deleted or emptied from the Recycle Bin.",
 
   "Settings.Title": "Settings",
+  "Settings.Appearance": "Appearance",
+  "Settings.Theme.Hint": "Pick a look. “Follow Windows” uses Sand when Windows is light and Midnight when it's dark.",
+  "Settings.Theme.System": "Follow Windows",
+  "Settings.Theme.Sand": "Sand",
+  "Settings.Theme.Midnight": "Midnight",
   "Settings.QuickJump": "Quick jump",
   "Settings.Hotkey": "Shortcut",
   "Settings.Hotkey.Hint": "Click the box, then press the keys you want.",

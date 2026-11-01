@@ -126,7 +126,7 @@ public partial class App : Application
     {
         Settings = SettingsStore.Load();
         Loc.Init(Settings.Language);
-        ThemeManager.Apply();
+        ThemeManager.Apply(Settings.Theme);
         Native.FollowSystemThemeInMenus();
         MemoryTrimmer.Enabled = Settings.LowMemoryMode;
         Frecency = new FrecencyStore();

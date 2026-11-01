@@ -11,6 +11,80 @@
             <StackPanel>
                 <TextBlock Style="{StaticResource PageTitle}" Text="{l:T Settings.Title}" Margin="0,0,0,24" />
 
+                <!-- Appearance: each tile is a small picture of the theme, drawn in that theme's own colours. -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Appearance}" />
+                        <TextBlock Style="{StaticResource Caption}" Text="{l:T Settings.Theme.Hint}" Margin="0,0,0,12" />
+                        <WrapPanel>
+                            <RadioButton x:Name="ThemeSystem" Style="{StaticResource ThemeTile}" GroupName="theme" Tag="system"
+                                         Checked="Theme_Checked" AutomationProperties.Name="{l:T Settings.Theme.System}">
+                                <StackPanel>
+                                    <Border Width="140" Height="82" CornerRadius="8" ClipToBounds="True">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Canvas Background="#F2EADD">
+                                                <Rectangle Canvas.Left="12" Canvas.Top="14" Width="58" Height="26" RadiusX="4" RadiusY="4" Fill="#FFFDF9" Stroke="#E6DACA" />
+                                                <Rectangle Canvas.Left="12" Canvas.Top="50" Width="34" Height="12" RadiusX="6" RadiusY="6" Fill="#8A5A2E" />
+                                            </Canvas>
+                                            <Canvas Grid.Column="1" Background="#090C15">
+                                                <Rectangle Canvas.Left="0" Canvas.Top="14" Width="58" Height="26" RadiusX="4" RadiusY="4" Fill="#10141E" Stroke="#1E2433" />
+                                                <Rectangle Canvas.Left="0" Canvas.Top="50" Width="34" Height="12" RadiusX="6" RadiusY="6" Fill="#8EA6FF" />
+                                            </Canvas>
+                                        </Grid>
+                                    </Border>
+                                    <TextBlock Text="{l:T Settings.Theme.System}" Margin="2,8,0,2" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="ThemeSand" Style="{StaticResource ThemeTile}" GroupName="theme" Tag="sand"
+                                         Checked="Theme_Checked" AutomationProperties.Name="{l:T Settings.Theme.Sand}">
+                                <StackPanel>
+                                    <Border Width="140" Height="82" CornerRadius="8" ClipToBounds="True" BorderBrush="#E6DACA" BorderThickness="1">
+                                        <Canvas>
+                                            <Canvas.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="#F8F3EB" Offset="0" />
+                                                    <GradientStop Color="#EBE0CE" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Canvas.Background>
+                                            <Rectangle Width="30" Height="82" Fill="#66FFFFFF" />
+                                            <Rectangle Canvas.Left="40" Canvas.Top="14" Width="88" Height="30" RadiusX="4" RadiusY="4" Fill="#FFFDF9" Stroke="#E6DACA" />
+                                            <Rectangle Canvas.Left="48" Canvas.Top="22" Width="50" Height="5" RadiusX="2" RadiusY="2" Fill="#2B2520" />
+                                            <Rectangle Canvas.Left="48" Canvas.Top="32" Width="34" Height="4" RadiusX="2" RadiusY="2" Fill="#8F8376" />
+                                            <Rectangle Canvas.Left="40" Canvas.Top="54" Width="40" Height="14" RadiusX="7" RadiusY="7" Fill="#8A5A2E" />
+                                        </Canvas>
+                                    </Border>
+                                    <TextBlock Text="{l:T Settings.Theme.Sand}" Margin="2,8,0,2" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="ThemeMidnight" Style="{StaticResource ThemeTile}" GroupName="theme" Tag="midnight"
+                                         Checked="Theme_Checked" AutomationProperties.Name="{l:T Settings.Theme.Midnight}">
+                                <StackPanel>
+                                    <Border Width="140" Height="82" CornerRadius="8" ClipToBounds="True" BorderBrush="#1E2433" BorderThickness="1">
+                                        <Canvas>
+                                            <Canvas.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="#05060A" Offset="0" />
+                                                    <GradientStop Color="#0E1426" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Canvas.Background>
+                                            <Rectangle Width="30" Height="82" Fill="#59000000" />
+                                            <Rectangle Canvas.Left="40" Canvas.Top="14" Width="88" Height="30" RadiusX="4" RadiusY="4" Fill="#10141E" Stroke="#1E2433" />
+                                            <Rectangle Canvas.Left="48" Canvas.Top="22" Width="50" Height="5" RadiusX="2" RadiusY="2" Fill="#E9ECF3" />
+                                            <Rectangle Canvas.Left="48" Canvas.Top="32" Width="34" Height="4" RadiusX="2" RadiusY="2" Fill="#7A8396" />
+                                            <Rectangle Canvas.Left="40" Canvas.Top="54" Width="40" Height="14" RadiusX="7" RadiusY="7" Fill="#8EA6FF" />
+                                        </Canvas>
+                                    </Border>
+                                    <TextBlock Text="{l:T Settings.Theme.Midnight}" Margin="2,8,0,2" />
+                                </StackPanel>
+                            </RadioButton>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
                 <!-- Quick jump -->
                 <Border Style="{StaticResource Card}">
                     <StackPanel>

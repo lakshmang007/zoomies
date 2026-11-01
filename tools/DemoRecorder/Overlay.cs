@@ -23,7 +23,7 @@ internal sealed class Overlay
     private readonly Window _card;
     private readonly TextBlock _cardTitle = Text(72, FontWeights.Bold, "#FFFFFF");
     private readonly TextBlock _cardTagline = Text(30, FontWeights.Normal, "#E2E8F0");
-    private readonly TextBlock _cardFooter = Text(22, FontWeights.SemiBold, "#93C5FD");
+    private readonly TextBlock _cardFooter = Text(22, FontWeights.SemiBold, "#A9BBFF");
 
     public Overlay(int screenWidth, int screenHeight, string? logoPath)
     {
@@ -61,7 +61,7 @@ internal sealed class Overlay
             WindowStyle = WindowStyle.None, AllowsTransparency = true, ResizeMode = ResizeMode.NoResize,
             Topmost = true, ShowInTaskbar = false, ShowActivated = false, Focusable = false,
             Left = 0, Top = 0, Width = screenWidth, Height = screenHeight,
-            Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#F70B1220"), (Color)ColorConverter.ConvertFromString("#F71E3A8A"), 35),
+            Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#F705060A"), (Color)ColorConverter.ConvertFromString("#F70E1426"), 35),
             Content = cardContent, Opacity = 0,
         };
         MakeClickThrough(_card);
@@ -119,7 +119,7 @@ internal sealed class Overlay
         {
             WindowStyle = WindowStyle.None, ResizeMode = ResizeMode.NoResize, ShowInTaskbar = false, ShowActivated = false,
             Left = 0, Top = 0, Width = screenWidth, Height = screenHeight,
-            Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FF0B1220"), (Color)ColorConverter.ConvertFromString("#FF1E3A8A"), 35),
+            Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FF05060A"), (Color)ColorConverter.ConvertFromString("#FF0E1426"), 35),
         };
         stage.SourceInitialized += (_, _) =>
         {
