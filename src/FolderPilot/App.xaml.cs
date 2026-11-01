@@ -55,6 +55,13 @@ public partial class App : Application
         AppDomain.CurrentDomain.UnhandledException += (_, ex) => Log.Error((Exception)ex.ExceptionObject, "Background thread");
         TaskScheduler.UnobservedTaskException += (_, ex) => { Log.Error(ex.Exception, "Task"); ex.SetObserved(); };
 
+        // Demo mode (videos, screenshots): sample folders and separate app data, so no real file names ever appear.
+        if (Environment.GetEnvironmentVariable("FOLDERPILOT_DEMO_ROOT") is { Length: > 0 } demoRoot && Directory.Exists(demoRoot))
+        {
+            KnownFolders.UseDemoRoot(demoRoot);
+            AppPaths.OverrideDataDir(Path.Combine(demoRoot, ".folderpilot"));
+        }
+
         string[] args = e.Args;
         if (args.Length >= 2 && args[0] == "--snapshot")
         {
@@ -90,10 +97,13 @@ public partial class App : Application
         bool background = args.Contains("--background");
         // At sign-in the disk is busy, so indexing waits a little longer.
         ApplyIndexSettings(background ? TimeSpan.FromSeconds(10) : TimeSpan.FromSeconds(1));
-        if (Frecency.Count == 0) FolderSeeder.SeedInBackground(Frecency, () => { });
-        else Task.Run(() => Frecency.Prune());
-
-        WindowsIntegration.Refresh(Settings.StartWithWindows, Settings.ExplorerContextMenu);
+        // Seeding reads Windows' real Recent list, and registrations touch the real registry: neither belongs in a demo.
+        if (!KnownFolders.IsDemo)
+        {
+            if (Frecency.Count == 0) FolderSeeder.SeedInBackground(Frecency, () => { });
+            else Task.Run(() => Frecency.Prune());
+            WindowsIntegration.Refresh(Settings.StartWithWindows, Settings.ExplorerContextMenu);
+        }
 
         _housekeeping = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromMinutes(5) };
         _housekeeping.Tick += (_, _) => Frecency.SaveIfDirty();

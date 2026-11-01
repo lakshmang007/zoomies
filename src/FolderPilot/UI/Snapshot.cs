@@ -28,7 +28,7 @@ internal static class Snapshot
             hub.Show();
 
             // Organize uses a demo folder so screenshots never show the user's own files.
-            hub.Navigate("organize", CreateDemoDownloads());
+            hub.Navigate("organize", Core.KnownFolders.IsDemo ? Core.KnownFolders.Downloads : CreateDemoDownloads());
             await Task.Delay(1500);
             if (hub.PageHost.Content is Pages.OrganizePage organize)
             {
