@@ -11,8 +11,9 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
     </Style>
     <Style x:Key="PageTitle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="28" />
-        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontFamily" Value="Sitka Display, Georgia, Segoe UI" />
+        <Setter Property="FontSize" Value="34" />
+        <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
@@ -52,20 +53,20 @@
         <Setter Property="Background" Value="{DynamicResource Brush.Card}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.CardBorder}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="10" />
-        <Setter Property="Padding" Value="20" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="24" />
         <Setter Property="Margin" Value="0,0,0,16" />
     </Style>
     <Style x:Key="Banner" TargetType="Border">
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Padding" Value="14,10" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="16,11" />
         <Setter Property="Margin" Value="0,12,0,0" />
         <Setter Property="Background" Value="{DynamicResource Brush.AccentSoft}" />
     </Style>
     <Style x:Key="IconTile" TargetType="Border">
         <Setter Property="Width" Value="40" />
         <Setter Property="Height" Value="40" />
-        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="CornerRadius" Value="12" />
         <Setter Property="Background" Value="{DynamicResource Brush.AccentSoft}" />
         <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
@@ -83,7 +84,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="18"
                             Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"
                                           TextElement.Foreground="{TemplateBinding Foreground}" />
@@ -100,7 +101,9 @@
 
     <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource ButtonBase}">
         <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="18,8" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.OnAccent}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Style.Triggers>
@@ -292,7 +295,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
-                    <Border x:Name="Bd" CornerRadius="6" Background="Transparent" Padding="{TemplateBinding Padding}">
+                    <Border x:Name="Bd" CornerRadius="10" Background="Transparent" Padding="{TemplateBinding Padding}">
                         <Grid>
                             <Rectangle x:Name="Bar" Width="3" Height="18" RadiusX="1.5" RadiusY="1.5" HorizontalAlignment="Left"
                                        Margin="-8,0,0,0" Fill="{DynamicResource Brush.Accent}" Visibility="Collapsed" />
@@ -327,7 +330,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
-                    <Border x:Name="Bd" Background="Transparent" CornerRadius="6" Padding="8,6">
+                    <Border x:Name="Bd" Background="Transparent" CornerRadius="10" Padding="8,6">
                         <ContentPresenter />
                     </Border>
                     <ControlTemplate.Triggers>

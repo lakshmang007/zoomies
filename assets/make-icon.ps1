@@ -28,7 +28,12 @@ function Render([int]$size) {
     # Tile
     $inset = [Math]::Max(0.5, $s * 0.03)
     $tile = New-RoundedRect $inset $inset ($s - 2 * $inset) ($s - 2 * $inset) ($s * 0.22)
-    $grad = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.PointF 0, 0), (New-Object System.Drawing.PointF $s, $s), ([System.Drawing.Color]::FromArgb(255, 86, 140, 255)), ([System.Drawing.Color]::FromArgb(255, 37, 76, 214))
+    # Blue -> violet -> rose, the same gradient as the app's accent.
+    $grad = New-Object System.Drawing.Drawing2D.LinearGradientBrush (New-Object System.Drawing.PointF 0, 0), (New-Object System.Drawing.PointF $s, $s), ([System.Drawing.Color]::FromArgb(255, 66, 133, 244)), ([System.Drawing.Color]::FromArgb(255, 217, 101, 112))
+    $blend = New-Object System.Drawing.Drawing2D.ColorBlend 3
+    $blend.Colors = @([System.Drawing.Color]::FromArgb(255, 66, 133, 244), [System.Drawing.Color]::FromArgb(255, 142, 91, 216), [System.Drawing.Color]::FromArgb(255, 217, 101, 112))
+    $blend.Positions = @([single]0, [single]0.55, [single]1)
+    $grad.InterpolationColors = $blend
     $g.FillPath($grad, $tile)
 
     # Folder: back with tab, then the front panel
@@ -52,7 +57,7 @@ function Render([int]$size) {
 
     # Navigation arrow on the folder front (dropped at tiny sizes where it would be a smudge)
     if ($size -ge 24) {
-        $blue = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 47, 98, 235))
+        $blue = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 91, 87, 224))
         $cx = $fx + $fw * 0.5; $cy = $fy + $fh * 0.64; $r = $fh * 0.25
         $arrow = New-Object System.Drawing.Drawing2D.GraphicsPath
         $arrow.AddPolygon(@(
