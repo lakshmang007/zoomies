@@ -74,13 +74,27 @@ internal static class Ui
     public static AutomationElement WaitElement(IntPtr window, string exactName, ControlType? type = null, int timeoutMs = 10000) =>
         WaitElement(window, n => n == exactName, exactName, timeoutMs, type);
 
-    public static void Click(AutomationElement element, int moveMs = 650)
+    /// <summary>Clicks a control of <paramref name="window"/>, but only if that window is really what's under the pointer.</summary>
+    public static void Click(IntPtr window, AutomationElement element, int moveMs = 650)
     {
         var r = element.Cached.BoundingRectangle;
+        int x = (int)(r.Left + r.Width / 2), y = (int)(r.Top + r.Height / 2);
         // Controls scrolled below the window still report a position; clicking there would hit something else.
-        if (r.Top + r.Height / 2 > GetSystemMetrics(1) - 50 || r.Left + r.Width / 2 > GetSystemMetrics(0))
+        if (y > GetSystemMetrics(1) - 50 || x > GetSystemMetrics(0))
             throw new InvalidOperationException($"Stopped: '{element.Cached.Name}' is outside the visible screen.");
-        Input.ClickAt((int)(r.Left + r.Width / 2), (int)(r.Top + r.Height / 2), moveMs);
+        ClickOn(window, x, y, moveMs, element.Cached.Name);
+    }
+
+    /// <summary>
+    /// Moves to (x, y) and clicks, after checking the top window there belongs to <paramref name="window"/>.
+    /// A click that lands somewhere else (an Explorer address bar, another app) could reveal or change the real user's things.
+    /// </summary>
+    public static void ClickOn(IntPtr window, int x, int y, int moveMs, string what)
+    {
+        IntPtr hit = GetAncestor(WindowFromPoint(new POINT { X = x, Y = y }), 2); // GA_ROOT
+        if (hit != window && GetAncestor(hit, 3) != window) // GA_ROOTOWNER, for a window's own dialogs
+            throw new InvalidOperationException($"Stopped: '{what}' is covered by '{TitleOf(hit)}', so the click could land in the wrong window.");
+        Input.ClickAt(x, y, moveMs);
     }
 
     public static string ClassOf(IntPtr hwnd)
@@ -123,4 +137,9 @@ internal static class Ui
     [DllImport("user32.dll")] private static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr w, IntPtr l);
     [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
     [DllImport("user32.dll")] private static extern int GetSystemMetrics(int index);
+    [DllImport("user32.dll")] private static extern IntPtr WindowFromPoint(POINT point);
+    [DllImport("user32.dll")] private static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct POINT { public int X, Y; }
 }

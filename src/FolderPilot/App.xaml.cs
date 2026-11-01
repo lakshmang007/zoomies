@@ -212,7 +212,7 @@ public partial class App : Application
         if (entry is null) return;
         var result = await Task.Run(() => Journal.Undo(entry.Id));
         Notify(Loc.T("Notify.Undone.Title"), result.Failed == 0
-            ? $"{entry.Title} — {Loc.F("History.UndoResult", result.Restored)}"
+            ? $"{entry.Title} — {Loc.P("History.UndoResult", result.Restored)}"
             : Loc.F("History.UndoPartial", result.Restored, result.Failed));
     }
 

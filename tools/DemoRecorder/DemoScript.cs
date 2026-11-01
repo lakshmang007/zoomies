@@ -11,7 +11,7 @@ namespace DemoRecorder;
 /// The demo, scene by scene: Find (Quick Jump in Explorer and in a Save dialog), Organize (preview, custom folder
 /// name, undo) and Clean (unused files to the Recycle Bin, undo from History). About 90 seconds.
 /// </summary>
-internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui)
+internal sealed partial class DemoScript(Options options, Overlay overlay, Dispatcher ui)
 {
     private const string HostTitle = "FolderPilot.MessageHost.6c1f";
     private const string LauncherTitle = "FolderPilot Quick Jump";
@@ -46,22 +46,15 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
             // Hide the real desktop (wallpaper, widgets) and Explorer's list of the user's own folders.
             OnUi(() => overlay.ShowStage(options.ScreenWidth, options.ScreenHeight, _explorer));
             MaskNavigationPane(_explorer);
+            // Clicking into Explorer before recording makes an auto-hiding taskbar (with the real user's pinned apps) slide away.
+            Focus(_explorer);
             SetCursorAway();
+            Thread.Sleep(1500);
 
             recorder = new ScreenRecorder(options.Ffmpeg, options.Output, options.ScreenWidth, options.ScreenHeight, options.Encoder);
-            OnUi(() => overlay.Card("FolderPilot", "Find, organize and clean your files in one light app — with undo for everything.", "Windows  ·  Private  ·  Free"));
-            Thread.Sleep(3800);
-            OnUi(overlay.HideCard);
-            Thread.Sleep(600);
-
-            SceneFind();
-            SceneSaveDialog();
-            SceneOrganize();
-            SceneClean();
-
-            OnUi(() => overlay.Card("FolderPilot", "Find, organize and clean your files in one light app — with undo for everything.",
-                "Private and local   ·   Light   ·   Free"));
-            Thread.Sleep(4800);
+            OnUi(() => _guard!.WatchNewExplorerWindows());
+            if (options.Script == "ad") RunAd();
+            else RunDemo();
         }
         finally
         {
@@ -71,7 +64,24 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
         }
     }
 
-    // ───────────────────────────── scenes ─────────────────────────────
+    // ───────────────────────────── the walkthrough demo ─────────────────────────────
+
+    private void RunDemo()
+    {
+        OnUi(() => overlay.Card("FolderPilot", "Find, organize and clean your files in one light app — with undo for everything.", "Windows  ·  Private  ·  Free"));
+        Thread.Sleep(3800);
+        OnUi(overlay.HideCard);
+        Thread.Sleep(600);
+
+        SceneFind();
+        SceneSaveDialog();
+        SceneOrganize();
+        SceneClean();
+
+        OnUi(() => overlay.Card("FolderPilot", "Find, organize and clean your files in one light app — with undo for everything.",
+            "Private and local   ·   Light   ·   Free"));
+        Thread.Sleep(4800);
+    }
 
     private void SceneFind()
     {
@@ -89,15 +99,24 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
     private void SceneSaveDialog()
     {
         Caption("Works in every app's Save and Open dialogs", "No more clicking through folders to save a file");
+        SaveDialogJump("invoices", 2800);
+    }
+
+    /// <summary>Opens a Save dialog in the stand-in notes app and uses Quick Jump to land in another folder.</summary>
+    private void SaveDialogJump(string query, int holdMs)
+    {
         // A stand-in notes app, so the Save dialog opens inside the sample PC rather than the real user's last folder.
         IntPtr notes = ui.Invoke(() =>
         {
-            var window = new NotesWindow(Path.Combine(options.Root, "Documents")) { Left = 330, Top = 70, Width = 1100, Height = 760 };
+            // Opens on top so it is never hidden behind another window (this process can't take the foreground itself)…
+            var window = new NotesWindow(Path.Combine(options.Root, "Documents")) { Left = 330, Top = 70, Width = 1100, Height = 760, Topmost = true };
             window.Show();
             return new System.Windows.Interop.WindowInteropHelper(window).Handle;
         });
         Thread.Sleep(1300);
-        Focus(notes);
+        Focus(notes, 0.25);
+        // …and stops being "always on top" once clicked, so its Save dialog stays below the privacy covers.
+        ui.Invoke(() => { foreach (System.Windows.Window w in System.Windows.Application.Current.Windows) if (w is NotesWindow) w.Topmost = false; });
         ShowKeys("Ctrl + S");
         Chord(Ctrl, S);
         IntPtr dialog = Ui.WaitWindow(h => Ui.ClassOf(h) == "#32770"
@@ -106,8 +125,8 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
         Thread.Sleep(500);
         MaskNavigationPane(dialog);
         Thread.Sleep(1300);
-        Jump("invoices", expectedForeground: dialog);
-        Thread.Sleep(2800);
+        Jump(query, expectedForeground: dialog);
+        Thread.Sleep(holdMs);
         ShowKeys("Esc");
         Press(Escape);
         Ui.WaitGone(dialog);
@@ -138,23 +157,23 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
 
         Caption("Choose where each file type goes", "Search “stl”, then name the folder — it's remembered next time");
         var search = Ui.WaitElement(_hub, n => n.StartsWith("Find a file type", StringComparison.Ordinal), "search box", type: ControlType.Edit);
-        Ui.Click(search);
+        Ui.Click(_hub, search);
         EnsureForeground(_hub, "FolderPilot window");
         Type("stl", 150);
         Thread.Sleep(1100);
         var folderBox = Ui.WaitElement(_hub, "Folder for .stl files", ControlType.Edit);
-        Ui.Click(folderBox);
+        Ui.Click(_hub, folderBox);
         Chord(Ctrl, A);
         Type("3D Prints", 105);
         Thread.Sleep(1500);
 
         apply = Ui.WaitElement(_hub, "Organize now", ControlType.Button);
-        Ui.Click(apply);
+        Ui.Click(_hub, apply);
         Thread.Sleep(2900);
 
         Caption("Changed your mind? Undo it", "Everything FolderPilot does can be undone");
         var undo = Ui.WaitElement(_hub, "Undo", ControlType.Button);
-        Ui.Click(undo);
+        Ui.Click(_hub, undo);
         Thread.Sleep(2500);
     }
 
@@ -163,24 +182,24 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
         Caption("Clean up files you haven't opened in months", "Old lecture videos and forgotten backups, found in seconds");
         Ui.Place(_hub, 280, 12, 1360, 1015);
         Thread.Sleep(700);
-        Ui.Click(Ui.WaitElement(_hub, "Clean up", ControlType.ListItem));
+        Ui.Click(_hub, Ui.WaitElement(_hub, "Clean up", ControlType.ListItem));
         Thread.Sleep(900);
-        Ui.Click(Ui.WaitElement(_hub, "Scan", ControlType.Button));
+        Ui.Click(_hub, Ui.WaitElement(_hub, "Scan", ControlType.Button));
         var selectAll = Ui.WaitElement(_hub, "Select all", ControlType.Button, timeoutMs: 30000);
         Thread.Sleep(2000);
-        Ui.Click(selectAll);
+        Ui.Click(_hub, selectAll);
         Thread.Sleep(1000);
-        Ui.Click(Ui.WaitElement(_hub, "Move to Recycle Bin", ControlType.Button));
+        Ui.Click(_hub, Ui.WaitElement(_hub, "Move to Recycle Bin", ControlType.Button));
         IntPtr confirm = Ui.WaitWindow(h => Ui.ClassOf(h) == "#32770"
             && Ui.TitleOf(h) == "Move to Recycle Bin?", "confirmation");
         Thread.Sleep(1500);
-        Ui.Click(Ui.WaitElement(confirm, "Yes", ControlType.Button));
+        Ui.Click(confirm, Ui.WaitElement(confirm, "Yes", ControlType.Button));
         Thread.Sleep(2600);
 
         Caption("Safe by design", "Files go to the Recycle Bin, and History can put everything back");
-        Ui.Click(Ui.WaitElement(_hub, "History", ControlType.ListItem));
+        Ui.Click(_hub, Ui.WaitElement(_hub, "History", ControlType.ListItem));
         Thread.Sleep(1600);
-        Ui.Click(Ui.WaitElement(_hub, "Undo", ControlType.Button));
+        Ui.Click(_hub, Ui.WaitElement(_hub, "Undo", ControlType.Button));
         Thread.Sleep(2800);
     }
 
@@ -207,11 +226,12 @@ internal sealed class DemoScript(Options options, Overlay overlay, Dispatcher ui
         Thread.Sleep(300);
     }
 
-    private void Focus(IntPtr window)
+    /// <param name="across">Where along the title bar to click (0 = left edge). Explorer's tabs and "+" button sit on the left, so it defaults to two thirds.</param>
+    private void Focus(IntPtr window, double across = 2.0 / 3)
     {
-        // A real click on the title bar, as a person would.
+        // A real click on the title bar, as a person would; refused if another window covers that spot.
         GetWindowRect(window, out var r);
-        ClickAt(r.Left + (r.Right - r.Left) * 2 / 3, r.Top + 18, 550);
+        Ui.ClickOn(window, r.Left + (int)((r.Right - r.Left) * across), r.Top + 18, 550, Ui.TitleOf(window));
         Thread.Sleep(300);
         EnsureForeground(window, Ui.TitleOf(window));
     }

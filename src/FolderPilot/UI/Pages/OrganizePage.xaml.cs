@@ -244,14 +244,14 @@ public partial class OrganizePage : UserControl
         PlanCard.Visibility = Visibility.Visible;
         bool any = plan.Moves.Count > 0;
         Summary.Text = any
-            ? Loc.F("Organize.Summary", plan.Moves.Count, plan.FolderCount, Display.Size(plan.TotalBytes))
+            ? Loc.P("Organize.Summary", plan.Moves.Count, plan.FolderCount, Display.Size(plan.TotalBytes))
             : Loc.T("Organize.Nothing");
         // One chip per top-level folder that will hold files, using the user's own names.
         CategoryChips.ItemsSource = plan.Moves
             .GroupBy(m => TopFolder(plan.Folder, m.Destination), StringComparer.CurrentCultureIgnoreCase)
             .Select(g => $"{g.Key} · {g.Count():N0}")
             .ToList();
-        SkippedText.Text = plan.Skipped > 0 ? Loc.F("Organize.Skipped", plan.Skipped) : "";
+        SkippedText.Text = plan.Skipped > 0 ? Loc.P("Organize.Skipped", plan.Skipped) : "";
         SkippedText.Visibility = plan.Skipped > 0 ? Visibility.Visible : Visibility.Collapsed;
         SearchArea.Visibility = ListHeader.Visibility = Moves.Visibility = RememberBox.Visibility = ApplyButton.Visibility =
             any ? Visibility.Visible : Visibility.Collapsed;
@@ -310,7 +310,7 @@ public partial class OrganizePage : UserControl
         PlanCard.Visibility = Visibility.Collapsed;
         PreviewButton.IsEnabled = true;
         DoneText.Text = result.Failed == 0
-            ? Loc.F("Organize.Done", result.Moved)
+            ? Loc.P("Organize.Done", result.Moved)
             : Loc.F("Organize.DoneWithFailures", result.Moved, result.Failed);
         UndoButton.Visibility = _done is null ? Visibility.Collapsed : Visibility.Visible;
         DoneBanner.Visibility = Visibility.Visible;

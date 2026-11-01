@@ -1,7 +1,6 @@
 {
   "App.Name": "FolderPilot",
   "App.Tagline": "Find, organize and clean up your files — fast.",
-
   "Tray.Tooltip": "FolderPilot — press {0} to jump",
   "Tray.QuickJump": "Quick jump\t{0}",
   "Tray.Open": "Open FolderPilot",
@@ -13,7 +12,6 @@
   "Tray.UndoNothing": "Nothing to undo",
   "Tray.Settings": "Settings",
   "Tray.Quit": "Quit FolderPilot",
-
   "Notify.Running.Title": "FolderPilot is running",
   "Notify.Running.Body": "Press {0} anywhere to jump to a folder. FolderPilot waits here in the tray.",
   "Notify.HotkeyFailed.Title": "Shortcut unavailable",
@@ -21,7 +19,6 @@
   "Notify.AutoTidy.Title": "Downloads tidied",
   "Notify.AutoTidy.Body": "{0} new downloads sorted into folders. Undo anytime from History.",
   "Notify.Undone.Title": "Undone",
-
   "Nav.Home": "Home",
   "Nav.Organize": "Organize",
   "Nav.Cleanup": "Clean up",
@@ -29,7 +26,6 @@
   "Nav.History": "History",
   "Nav.Settings": "Settings",
   "Nav.ShortcutHint": "Press {0} anywhere to jump",
-
   "Launcher.Placeholder": "Jump to a folder or file…   type > for actions",
   "Launcher.InExplorer": "Opens in this File Explorer window",
   "Launcher.InDialog": "Opens in this Open/Save dialog",
@@ -41,7 +37,6 @@
   "Launcher.Hints": "↑↓ choose · Enter open · Ctrl+Enter show in folder · Shift+Enter new window · Ctrl+C copy path · Esc close",
   "Launcher.EmptyHint": "Type a few letters of any name. Add a word from a parent folder to narrow it down, like “college notes”.",
   "Launcher.Copied": "Path copied",
-
   "Action.OrganizeHere": "Organize this folder",
   "Action.CleanupHere": "Find unused files here",
   "Action.DuplicatesHere": "Find duplicate files here",
@@ -52,7 +47,6 @@
   "Action.OpenApp": "Open FolderPilot",
   "Action.Settings": "Settings",
   "Action.Quit": "Quit FolderPilot",
-
   "Home.Morning": "Good morning",
   "Home.Afternoon": "Good afternoon",
   "Home.Evening": "Good evening",
@@ -68,7 +62,6 @@
   "Home.Status.Index": "{0:N0} items indexed",
   "Home.Status.Indexing": "Indexing… {0:N0} items so far",
   "Home.Status.Memory": "FolderPilot is using {0} of memory",
-
   "Suggestion.Organize.Title": "{0} has {1:N0} loose files",
   "Suggestion.Organize.Body": "Sort {2} of files into folders by type. You'll see a preview first.",
   "Suggestion.Organize.Action": "Organize",
@@ -77,7 +70,6 @@
   "Suggestion.Unused.Title": "{0} in files you haven't opened for {1} days",
   "Suggestion.Unused.Body": "{2:N0} files across your personal folders. Review them and recycle what you don't need.",
   "Suggestion.Review": "Review",
-
   "Organize.Title": "Organize a folder",
   "Organize.Subtitle": "Sort loose files into tidy subfolders. You see exactly what moves before anything happens, and you can undo it later.",
   "Organize.Folder": "Folder",
@@ -89,8 +81,10 @@
   "Organize.KeepShortcuts": "Leave shortcuts where they are",
   "Organize.Preview": "Preview",
   "Organize.Summary": "{0:N0} files ({2}) will move into {1:N0} folders.",
+  "Organize.Summary.One": "1 file ({2}) will move into 1 folder.",
   "Organize.Nothing": "Nothing to organize here. Files changed in the last 10 minutes are left alone.",
   "Organize.Skipped": "{0:N0} files stay where they are (shortcuts, or files in use or still downloading).",
+  "Organize.Skipped.One": "1 file stays where it is (a shortcut, or a file in use or still downloading).",
   "Organize.Column.Name": "File",
   "Organize.Column.To": "Moves to",
   "Organize.Column.Size": "Size",
@@ -108,15 +102,15 @@
   "Organize.NoMatch": "No files match “{0}”.",
   "Organize.Apply": "Organize now",
   "Organize.Done": "Done — {0:N0} files organized.",
+  "Organize.Done.One": "Done — 1 file organized.",
   "Organize.DoneWithFailures": "{0:N0} files organized. {1:N0} were in use and stayed put.",
   "Organize.Undo": "Undo",
   "Organize.Undone": "Undone — everything is back where it was.",
   "Organize.FolderMissing": "That folder doesn't exist.",
-
   "Journal.Organized": "Organized {0}",
   "Journal.AutoTidy": "Auto-tidied {0}",
   "Journal.Recycled": "Moved {0:N0} items to the Recycle Bin",
-
+  "Journal.Recycled.One": "Moved 1 item to the Recycle Bin",
   "Category.Documents": "Documents",
   "Category.Images": "Images",
   "Category.Videos": "Videos",
@@ -128,7 +122,6 @@
   "Category.Fonts": "Fonts",
   "Category.DiskImages": "Disk Images",
   "Category.Other": "Other",
-
   "Cleanup.Title": "Clean up",
   "Cleanup.Subtitle": "Find files you no longer need and get space back. Everything goes to the Recycle Bin first, and you can undo it.",
   "Cleanup.Tab.Unused": "Unused files",
@@ -152,7 +145,9 @@
   "Cleanup.Stop": "Stop",
   "Cleanup.Scanning": "Scanning… {0:N0} items checked",
   "Cleanup.ResultSummary": "{0:N0} items · {1}",
+  "Cleanup.ResultSummary.One": "1 item · {1}",
   "Cleanup.DuplicateSummary": "{0:N0} sets of duplicates · {1} could be freed",
+  "Cleanup.DuplicateSummary.One": "1 set of duplicates · {1} could be freed",
   "Cleanup.NoneFound": "Nothing found. Nice and tidy.",
   "Cleanup.SelectAll": "Select all",
   "Cleanup.SelectNone": "Select none",
@@ -166,12 +161,13 @@
   "Cleanup.Recycle": "Move to Recycle Bin",
   "Cleanup.Confirm.Title": "Move to Recycle Bin?",
   "Cleanup.Confirm.Body": "{0:N0} items ({1}) will go to the Recycle Bin. You can bring them back from History or from the Recycle Bin.",
+  "Cleanup.Confirm.Body.One": "1 item ({1}) will go to the Recycle Bin. You can bring it back from History or from the Recycle Bin.",
   "Cleanup.Done": "{0:N0} items moved to the Recycle Bin. {1} will be freed when you empty it.",
+  "Cleanup.Done.One": "1 item moved to the Recycle Bin. {1} will be freed when you empty it.",
   "Cleanup.DoneSkipped": "{0:N0} items couldn't be moved (in use, or on a drive without a Recycle Bin).",
   "Cleanup.AccessOn": "“Last used” is the last time a file was opened, changed or copied to this PC.",
   "Cleanup.AccessOff": "Windows isn't recording when files are opened on this PC, so “last used” means last changed or copied here.",
   "Cleanup.Reveal": "Show in folder",
-
   "Workspaces.Title": "Workspaces",
   "Workspaces.Subtitle": "Save the folders you have open in File Explorer, then reopen them all in one click. Great for switching between projects, classes or clients.",
   "Workspaces.NamePlaceholder": "Name, for example “Final year project”",
@@ -180,20 +176,21 @@
   "Workspaces.NoneOpen": "Open the folders you want in File Explorer first, then save them here.",
   "Workspaces.Empty": "No workspaces yet.",
   "Workspaces.Folders": "{0:N0} folders",
+  "Workspaces.Folders.One": "1 folder",
   "Workspaces.Open": "Open all",
   "Workspaces.Delete": "Delete",
   "Workspaces.DefaultName": "Workspace {0}",
   "Workspaces.Saved": "Saved “{0}” with {1:N0} folders.",
-
   "History.Title": "History",
   "History.Subtitle": "Everything FolderPilot has changed. You can undo any of it.",
   "History.Empty": "Nothing yet. When you organize or clean up, it shows up here.",
   "History.Items": "{0:N0} items · {1}",
+  "History.Items.One": "1 item · {1}",
   "History.Undo": "Undo",
   "History.Undone": "Undone",
   "History.UndoResult": "Restored {0:N0} items.",
+  "History.UndoResult.One": "Restored 1 item.",
   "History.UndoPartial": "Restored {0:N0} items. {1:N0} couldn't be restored — they may have been moved, deleted or emptied from the Recycle Bin.",
-
   "Settings.Title": "Settings",
   "Settings.Appearance": "Appearance",
   "Settings.Theme.Hint": "Pick a look. “Follow Windows” uses Sand when Windows is light and Midnight when it's dark.",
@@ -236,7 +233,6 @@
   "Settings.About": "About",
   "Settings.Version": "Version {0}",
   "Settings.DataFolder": "Open data folder",
-
   "Common.Cancel": "Cancel",
   "Common.Error": "Something went wrong: {0}"
 }

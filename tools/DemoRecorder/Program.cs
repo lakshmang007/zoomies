@@ -4,13 +4,14 @@ using System.Windows;
 
 namespace DemoRecorder;
 
-internal sealed record Options(string Root, string App, string Output, string Ffmpeg, string Encoder, int ScreenWidth, int ScreenHeight, int CountdownSeconds);
+internal sealed record Options(string Root, string App, string Output, string Ffmpeg, string Encoder, int ScreenWidth, int ScreenHeight, int CountdownSeconds, string Script);
 
 /// <summary>
 /// Usage:
 ///   DemoRecorder setup  [--root C:\Demo]                      create the sample PC only
-///   DemoRecorder record [--root C:\Demo] [--app FolderPilot.exe] [--out demo.mp4] [--encoder h264_nvenc]
-/// Recording takes over the mouse and keyboard for about 90 seconds.
+///   DemoRecorder record [--script demo|ad] [--root C:\Demo] [--app FolderPilot.exe] [--out video.mp4] [--encoder h264_nvenc]
+///     demo: the feature walkthrough.  ad: the short story-style ad ("Found it.").
+/// Recording takes over the mouse and keyboard for about 90 seconds, after a countdown.
 /// </summary>
 internal static class Program
 {
@@ -97,12 +98,13 @@ internal static class Program
         var options = new Options(
             Root: root,
             App: Arg("--app", Path.Combine(repo, @"src\FolderPilot\bin\Debug\net10.0-windows\FolderPilot.exe")),
-            Output: Path.GetFullPath(Arg("--out", Path.Combine(repo, "demo", "FolderPilot-demo.mp4"))),
+            Output: Path.GetFullPath(Arg("--out", Path.Combine(repo, "demo", Arg("--script", "demo") == "ad" ? "FolderPilot-ad.mp4" : "FolderPilot-demo.mp4"))),
             Ffmpeg: ffmpeg,
             Encoder: Arg("--encoder", "h264_nvenc"),
             ScreenWidth: GetSystemMetrics(0),
             ScreenHeight: GetSystemMetrics(1),
-            CountdownSeconds: int.Parse(Arg("--countdown", "10")));
+            CountdownSeconds: int.Parse(Arg("--countdown", "10")),
+            Script: Arg("--script", "demo"));
 
         DemoData.Create(root); // fresh files every take, since the demo moves some of them
         var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };

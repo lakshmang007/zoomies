@@ -54,9 +54,22 @@ internal sealed class PrivacyGuard
 
     private void OnWindowShown(IntPtr hook, uint evt, IntPtr hwnd, int idObject, int idChild, uint thread, uint time)
     {
-        if (idObject != 0 || _guarded.ContainsKey(hwnd) || ClassOf(hwnd) != "#32770") return;
+        if (idObject != 0 || _guarded.ContainsKey(hwnd)) return;
+        string cls = ClassOf(hwnd);
+        // Save/Open dialogs of this process, and (once recording) any File Explorer window the script didn't open itself.
+        bool cover = (hook == _hook && cls == "#32770") || (hook == _explorerHook && cls == "CabinetWClass");
+        if (!cover) return;
         _guarded[hwnd] = new Guarded { Offset = Rect.Empty, Color = Color.FromRgb(0x20, 0x20, 0x20), WholeWindow = true };
         Update();
+    }
+
+    private IntPtr _explorerHook;
+
+    /// <summary>From now on, a File Explorer window that appears unexpectedly is covered entirely until the script handles it.</summary>
+    public void WatchNewExplorerWindows()
+    {
+        if (_explorerHook == IntPtr.Zero)
+            _explorerHook = SetWinEventHook(EVENT_OBJECT_SHOW, EVENT_OBJECT_SHOW, IntPtr.Zero, _onShow, 0, 0, 0);
     }
 
     public void Remove(IntPtr window)
@@ -68,6 +81,7 @@ internal sealed class PrivacyGuard
     {
         _timer.Stop();
         UnhookWinEvent(_hook);
+        if (_explorerHook != IntPtr.Zero) UnhookWinEvent(_explorerHook);
         foreach (var g in _guarded.Values) g.Cover?.Close();
         _guarded.Clear();
     }
@@ -96,7 +110,8 @@ internal sealed class PrivacyGuard
             if (!g.Cover.IsVisible) g.Cover.Show();
 
             IntPtr cover = new WindowInteropHelper(g.Cover).Handle;
-            if ((GetWindowLong(cover, -20) & 0x8) == 0) // lost WS_EX_TOPMOST
+            // Back on top if it lost WS_EX_TOPMOST, or if the guarded window is itself "always on top" and could rise above it.
+            if ((GetWindowLong(cover, -20) & 0x8) == 0 || (GetWindowLong(hwnd, -20) & 0x8) != 0)
                 SetWindowPos(cover, new IntPtr(-1), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010);
         }
     }

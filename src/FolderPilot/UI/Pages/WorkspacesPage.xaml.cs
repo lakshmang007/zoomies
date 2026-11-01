@@ -39,7 +39,7 @@ public partial class WorkspacesPage : UserControl
         RefreshOpenFolders();
         var all = _app.Workspaces.All;
         List.ItemsSource = all.Select(w => new WorkspaceRow(w, w.Name,
-            $"{Loc.F("Workspaces.Folders", w.Folders.Count)} · {Display.DateAndTime(w.LastOpenedUtc ?? w.CreatedUtc)}",
+            $"{Loc.P("Workspaces.Folders", w.Folders.Count)} · {Display.DateAndTime(w.LastOpenedUtc ?? w.CreatedUtc)}",
             string.Join("   ", w.Folders.Select(PathUtil.DisplayName)))).ToList();
         EmptyText.Visibility = all.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }

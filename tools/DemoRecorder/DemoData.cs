@@ -58,6 +58,13 @@ internal static class DemoData
         Bytes(P(@"Downloads\VSCodeUserSetup-x64.exe"), 92_000_000, 60);
         Bytes(P(@"Downloads\python-3.13.2-amd64.exe"), 27_000_000, 75);
         Bytes(P(@"Downloads\node-v22.14.0-x64.msi"), 30_000_000, 90);
+        Clutter(P("Downloads"));
+
+        // The same résumé saved four times under different names: what the duplicate finder is for.
+        byte[] resumeV2 = new byte[1_300_000];
+        new Random(44).NextBytes(resumeV2);
+        foreach (var (name, days) in new[] { ("Resume - final.pdf", 40), ("Resume - final (1).pdf", 38), ("Resume - FINAL final.pdf", 31), ("Resume - use this one.pdf", 25) })
+            Write(P($@"Downloads\{name}"), resumeV2, days);
 
         // Desktop
         Text(P(@"Desktop\todo.txt"), "- finish report\n- submit assignment 3\n- print poster\n", 1);
@@ -152,6 +159,51 @@ internal static class DemoData
         Visit(@"Documents\Invoices", 3, 150);
         Visit("Desktop", 4, 30);
         store.SaveIfDirty();
+    }
+
+    /// <summary>
+    /// A few hundred small files of the kind that pile up in a real Downloads folder: phone photos, screenshots,
+    /// "(1)" copies, receipts, setup files. Small, so creating them takes seconds.
+    /// </summary>
+    private static void Clutter(string downloads)
+    {
+        var random = new Random(2026);
+        string[] colors = ["#F59E0B", "#0EA5E9", "#22C55E", "#EC4899", "#8B5CF6", "#F97316", "#14B8A6", "#EF4444"];
+        for (int i = 0; i < 70; i++)
+        {
+            var day = Now.AddDays(-random.Next(15, 300));
+            string name = $"IMG_{day:yyyyMMdd}_{random.Next(100000, 999999)}.jpg";
+            Render(Path.Combine(downloads, name), 240, 180, dc =>
+            {
+                dc.DrawRectangle(new LinearGradientBrush(Hex(colors[random.Next(colors.Length)]), Hex("#FFF7ED"), 90), null, new Rect(0, 0, 240, 180));
+                dc.DrawEllipse(new SolidColorBrush(Hex(colors[random.Next(colors.Length)])), null, new Point(random.Next(40, 200), 60), 26, 26);
+            }, random.Next(15, 300), null);
+        }
+        for (int i = 0; i < 45; i++)
+        {
+            var day = Now.AddDays(-random.Next(12, 200));
+            Render(Path.Combine(downloads, $"Screenshot {day:yyyy-MM-dd} {random.Next(100000, 235959)}.png"), 320, 180, dc =>
+                dc.DrawRectangle(new LinearGradientBrush(Hex("#1E293B"), Hex(colors[random.Next(colors.Length)]), 20), null, new Rect(0, 0, 320, 180)),
+                random.Next(12, 200), null);
+        }
+        string[] docs = ["notes", "assignment", "lab manual", "question paper", "syllabus", "receipt", "ticket", "form", "certificate", "brochure"];
+        for (int i = 0; i < 70; i++)
+        {
+            string stem = docs[random.Next(docs.Length)];
+            string name = random.Next(3) switch { 0 => $"{stem} ({random.Next(1, 9)}).pdf", 1 => $"{stem}-{random.Next(2, 99)}.pdf", _ => $"{stem}_{random.Next(1000, 9999)}.docx" };
+            string path = Path.Combine(downloads, name);
+            if (!File.Exists(path)) Bytes(path, random.Next(20_000, 400_000), random.Next(15, 280));
+        }
+        string[] other = ["song", "voice note", "recording"];
+        for (int i = 0; i < 30; i++)
+            Bytes(Path.Combine(downloads, $"{other[random.Next(other.Length)]} {random.Next(1, 999)}.mp3"), random.Next(200_000, 900_000), random.Next(20, 250));
+        for (int i = 0; i < 40; i++)
+        {
+            string path = Path.Combine(downloads, $"{docs[random.Next(docs.Length)]}-{random.Next(100, 999)}.zip");
+            if (!File.Exists(path)) Bytes(path, random.Next(50_000, 600_000), random.Next(20, 250));
+        }
+        for (int i = 0; i < 25; i++)
+            Bytes(Path.Combine(downloads, $"setup-{random.Next(10, 99)}.{random.Next(1, 9)}.exe"), random.Next(300_000, 900_000), random.Next(20, 120));
     }
 
     // ───────────────────────────── file helpers ─────────────────────────────

@@ -65,7 +65,80 @@ internal sealed class Overlay
             Content = cardContent, Opacity = 0,
         };
         MakeClickThrough(_card);
+
+        // Speech bubble for the ad: coloured avatar with the speaker's initial, their name, and the line.
+        _sayInitial.HorizontalAlignment = HorizontalAlignment.Center;
+        _sayInitial.VerticalAlignment = VerticalAlignment.Center;
+        _sayLine.MaxWidth = screenWidth * 0.55;
+        _sayLine.TextWrapping = TextWrapping.Wrap;
+        var bubbleText = new StackPanel { Margin = new Thickness(16, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        bubbleText.Children.Add(_sayName);
+        bubbleText.Children.Add(_sayLine);
+        var bubble = new StackPanel { Orientation = Orientation.Horizontal };
+        bubble.Children.Add(_sayAvatar);
+        bubble.Children.Add(bubbleText);
+        _sayAvatar.Child = _sayInitial;
+        _say = Layer(new Border
+        {
+            Background = Brush("#F00F131D"),
+            BorderBrush = Brush("#33FFFFFF"),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(22),
+            Padding = new Thickness(16, 14, 30, 16),
+            Child = bubble,
+        }, screenWidth, screenHeight, bottom: 96);
+
+        // Full-screen "beat" for the big reaction moments ("Impossible.").
+        _beatText.HorizontalAlignment = _beatSub.HorizontalAlignment = HorizontalAlignment.Center;
+        _beatText.TextAlignment = _beatSub.TextAlignment = TextAlignment.Center;
+        _beatText.MaxWidth = _beatSub.MaxWidth = screenWidth * 0.75;
+        _beatText.TextWrapping = _beatSub.TextWrapping = TextWrapping.Wrap;
+        _beatSub.Margin = new Thickness(0, 18, 0, 0);
+        _beat = new Window
+        {
+            WindowStyle = WindowStyle.None, AllowsTransparency = true, ResizeMode = ResizeMode.NoResize,
+            Topmost = true, ShowInTaskbar = false, ShowActivated = false, Focusable = false,
+            Left = 0, Top = 0, Width = screenWidth, Height = screenHeight,
+            Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FA05060A"), (Color)ColorConverter.ConvertFromString("#FA0E1426"), 35),
+            Content = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Children = { _beatText, _beatSub } },
+            Opacity = 0,
+        };
+        MakeClickThrough(_beat);
     }
+
+    private readonly Window _say;
+    private readonly Border _sayAvatar = new() { Width = 48, Height = 48, CornerRadius = new CornerRadius(24) };
+    private readonly TextBlock _sayInitial = Text(22, FontWeights.Bold, "#0A0F1F");
+    private readonly TextBlock _sayName = Text(16, FontWeights.SemiBold, "#A9BBFF");
+    private readonly TextBlock _sayLine = Text(27, FontWeights.SemiBold, "#FFFFFF");
+    private readonly Window _beat;
+    private readonly TextBlock _beatText = Text(84, FontWeights.Bold, "#FFFFFF");
+    private readonly TextBlock _beatSub = Text(30, FontWeights.Normal, "#A9BBFF");
+
+    /// <summary>A character's line, shown as a speech bubble with their avatar.</summary>
+    public void Say(string name, string line, string color)
+    {
+        HideCaption();
+        _sayAvatar.Background = Brush(color);
+        _sayInitial.Text = name[..1];
+        _sayName.Text = name;
+        _sayName.Foreground = Brush(color);
+        _sayLine.Text = line;
+        FadeIn(_say);
+    }
+
+    public void HideSay() => FadeOut(_say);
+
+    /// <summary>A full-screen line for the big moments.</summary>
+    public void Beat(string text, string sub = "")
+    {
+        _beatText.Text = text;
+        _beatSub.Text = sub;
+        _beatSub.Visibility = sub.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
+        FadeIn(_beat);
+    }
+
+    public void HideBeat() => FadeOut(_beat);
 
     public void Caption(string title, string subtitle = "")
     {
@@ -103,6 +176,8 @@ internal sealed class Overlay
         _caption.Close();
         _keys.Close();
         _card.Close();
+        _say.Close();
+        _beat.Close();
         foreach (var w in _extra.ToList()) w.Close();
         _extra.Clear();
     }

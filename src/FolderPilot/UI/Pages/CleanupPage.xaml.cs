@@ -255,9 +255,9 @@ public partial class CleanupPage : UserControl
         KeepOldestButton.Visibility = _mode == CleanupMode.Duplicates ? Visibility.Visible : Visibility.Collapsed;
 
         ResultSummary.Text = _mode == CleanupMode.Duplicates
-            ? Loc.F("Cleanup.DuplicateSummary", _rows.Select(r => r.Group).Distinct().Count(),
+            ? Loc.P("Cleanup.DuplicateSummary", _rows.Select(r => r.Group).Distinct().Count(),
                 Display.Size(_rows.Where(r => !r.IsOldestInGroup).Sum(r => r.Size)))
-            : Loc.F("Cleanup.ResultSummary", _rows.Count, Display.Size(_rows.Sum(r => r.Size)));
+            : Loc.P("Cleanup.ResultSummary", _rows.Count, Display.Size(_rows.Sum(r => r.Size)));
         UpdateSelection();
     }
 
@@ -300,14 +300,14 @@ public partial class CleanupPage : UserControl
         if (selected.Count == 0) return;
         var window = Window.GetWindow(this);
         long bytes = selected.Sum(r => r.Size);
-        var answer = MessageBox.Show(window, Loc.F("Cleanup.Confirm.Body", selected.Count, Display.Size(bytes)),
+        var answer = MessageBox.Show(window, Loc.P("Cleanup.Confirm.Body", selected.Count, Display.Size(bytes)),
             Loc.T("Cleanup.Confirm.Title"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
         if (answer != MessageBoxResult.Yes) return;
 
         RecycleButton.IsEnabled = false;
         IntPtr owner = new WindowInteropHelper(window).Handle;
         var items = selected.Select(r => (r.Path, r.Size)).ToList();
-        string title = Loc.F("Journal.Recycled", items.Count);
+        string title = Loc.P("Journal.Recycled", items.Count);
         var outcome = await StaThread.Run(() => Recycler.Recycle(items, _app.Journal, title, owner));
         _app.CachedSuggestions = null;
         _done = outcome.Entry;
@@ -315,7 +315,7 @@ public partial class CleanupPage : UserControl
         var gone = selected.Where(r => !File.Exists(r.Path) && !Directory.Exists(r.Path)).ToHashSet();
         ShowRows(_rows.Where(r => !gone.Contains(r)).ToList());
 
-        DoneText.Text = Loc.F("Cleanup.Done", outcome.Recycled, Display.Size(outcome.Bytes))
+        DoneText.Text = Loc.P("Cleanup.Done", outcome.Recycled, Display.Size(outcome.Bytes))
             + (outcome.Skipped > 0 ? " " + Loc.F("Cleanup.DoneSkipped", outcome.Skipped) : "");
         UndoButton.Visibility = _done is null ? Visibility.Collapsed : Visibility.Visible;
         DoneBanner.Visibility = Visibility.Visible;
@@ -329,7 +329,7 @@ public partial class CleanupPage : UserControl
         _done = null;
         _app.CachedSuggestions = null;
         DoneText.Text = result.Failed == 0
-            ? Loc.F("History.UndoResult", result.Restored)
+            ? Loc.P("History.UndoResult", result.Restored)
             : Loc.F("History.UndoPartial", result.Restored, result.Failed);
         UndoButton.Visibility = Visibility.Collapsed;
         UndoButton.IsEnabled = true;

@@ -32,6 +32,16 @@ public static class Loc
 
     public static string F(string key, params object?[] args) => string.Format(Culture, T(key), args);
 
+    /// <summary>
+    /// Like <see cref="F"/>, but uses the "<paramref name="key"/>.One" text when <paramref name="count"/> is 1
+    /// ("1 set of duplicates" rather than "1 sets"). <paramref name="count"/> is also passed as {0}.
+    /// </summary>
+    public static string P(string key, long count, params object?[] more)
+    {
+        string chosen = count == 1 && _strings.ContainsKey(key + ".One") ? key + ".One" : key;
+        return string.Format(Culture, T(chosen), [count, .. more]);
+    }
+
     private static Dictionary<string, string>? Load(string name)
     {
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"FolderPilot.Strings.{name}.json");

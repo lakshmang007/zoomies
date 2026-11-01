@@ -27,7 +27,7 @@ public partial class HistoryPage : UserControl
             e.Id,
             e.Kind == JournalKind.Move ? "" : "",
             e.Title,
-            $"{Loc.F("History.Items", e.Ops.Count, Display.Size(e.TotalBytes))} · {Display.DateAndTime(e.TimeUtc)}",
+            $"{Loc.P("History.Items", e.Ops.Count, Display.Size(e.TotalBytes))} · {Display.DateAndTime(e.TimeUtc)}",
             e.Undone ? Visibility.Collapsed : Visibility.Visible,
             e.Undone ? Visibility.Visible : Visibility.Collapsed)).ToList();
         EmptyText.Visibility = entries.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -41,7 +41,7 @@ public partial class HistoryPage : UserControl
         var result = await Task.Run(() => _app.Journal.Undo(row.Id));
         _app.CachedSuggestions = null;
         ResultText.Text = result.Failed == 0
-            ? Loc.F("History.UndoResult", result.Restored)
+            ? Loc.P("History.UndoResult", result.Restored)
             : Loc.F("History.UndoPartial", result.Restored, result.Failed);
         ResultBanner.Visibility = Visibility.Visible;
         Refresh();
