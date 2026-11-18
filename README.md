@@ -54,6 +54,7 @@ sort messy folders in one click, and clear out what you don't use — all on you
    and tells you which.
 
 Zoomies starts with Windows and updates itself quietly. To remove it, use **Settings → Apps → Installed apps**.
+Your settings and undo history stay in `%APPDATA%\Zoomies` in case you reinstall; delete that folder to remove them too.
 
 > **"Windows protected your PC"?** The installer isn't code-signed yet, so SmartScreen may warn about it.
 > Choose **More info → Run anyway**. You can check the code and the build in this repository: every release is built
@@ -61,7 +62,8 @@ Zoomies starts with Windows and updates itself quietly. To remove it, use **Sett
 
 Prefer not to install? Download **Zoomies-win-Portable.zip** from the [latest release](https://github.com/lakshmang007/zoomies/releases/latest), unzip it and run `Zoomies.exe`.
 
-**Requires** 64-bit Windows 10 or 11.
+**Requires** 64-bit (x64) Windows 10 or 11. On ARM PCs it runs through Windows 11's built-in emulation; Windows 10 on
+ARM isn't supported.
 
 ## Quick Jump keys
 
@@ -87,9 +89,7 @@ dotnet test tests/Zoomies.Core.Tests
 dotnet run --project src/Zoomies
 ```
 
-To build the installer, install [Velopack](https://velopack.io)'s CLI (`dotnet tool install -g vpk --version 1.2.161`) and run
-`powershell -ExecutionPolicy Bypass -File build\package.ps1 -Version 0.1.0`. Releases are published by pushing a
-version tag (`v0.2.0`); the [release workflow](.github/workflows/release.yml) does the rest.
+How it's built: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Publishing a version: [docs/RELEASING.md](docs/RELEASING.md).
 
 | Folder | What's in it |
 |---|---|
@@ -97,11 +97,13 @@ version tag (`v0.2.0`); the [release workflow](.github/workflows/release.yml) do
 | `src/Zoomies` | The WPF app: tray, Quick Jump, pages, File Explorer integration |
 | `tests/Zoomies.Core.Tests` | Unit tests |
 | `tools/DemoRecorder` | Records the demo videos on a sample PC, never your own files |
+| `tools/reel` | Cuts those recordings into promo and tutorial videos |
 
 ## Contributing
 
 Bug reports, ideas and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
-Translations are just JSON files in `src/Zoomies/Strings`.
+Translations are just JSON files in `src/Zoomies/Strings`. What's new in each version is in the [CHANGELOG](CHANGELOG.md).
+Found a security problem? Please report it privately — see [SECURITY.md](SECURITY.md).
 
 If Zoomies saves you time, a ⭐ helps other people find it.
 
