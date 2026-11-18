@@ -6,7 +6,8 @@
 #   powershell -ExecutionPolicy Bypass -File build\package.ps1 -Version 0.1.0
 param(
     [string]$Version = "0.1.0",
-    [string]$Runtime = "win-x64"
+    [string]$Runtime = "win-x64",
+    [string]$ReleaseNotes = ""
 )
 $ErrorActionPreference = "Stop"
 $root = Split-Path $PSScriptRoot -Parent
@@ -19,7 +20,8 @@ dotnet publish "$root\src\Zoomies\Zoomies.csproj" -c Release -r $Runtime --self-
     -p:Version=$Version -p:PublishReadyToRun=true -o $publish
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
 
-vpk pack --packId Zoomies --packVersion $Version --packDir $publish --mainExe Zoomies.exe `
+$notes = if ($ReleaseNotes -and (Test-Path $ReleaseNotes)) { @("--releaseNotes", $ReleaseNotes) } else { @() }
+vpk pack @notes --packId Zoomies --packVersion $Version --packDir $publish --mainExe Zoomies.exe `
     --packTitle Zoomies --packAuthors "Lakshman G" --icon "$root\src\Zoomies\Assets\Zoomies.ico" `
     --shortcuts StartMenuRoot --runtime $Runtime --outputDir $releases
 if ($LASTEXITCODE -ne 0) { throw "vpk pack failed" }

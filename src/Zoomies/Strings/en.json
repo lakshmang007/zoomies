@@ -18,6 +18,8 @@
   "Notify.Update.Body": "Zoomies {0} is downloaded. It installs the next time Zoomies starts, or restart it now from Settings.",
   "Notify.HotkeyFailed.Title": "Shortcut unavailable",
   "Notify.HotkeyFailed.Body": "{0} is already used by another app. Choose a different shortcut in Settings.",
+  "Notify.HotkeyMoved.Title": "Quick Jump shortcut changed",
+  "Notify.HotkeyMoved.Body": "{0} is used by another app, so Zoomies now uses {1}. You can change it in Settings.",
   "Notify.AutoTidy.Title": "Downloads tidied",
   "Notify.AutoTidy.Body": "{0} new downloads sorted into folders. Undo anytime from History.",
   "Notify.Undone.Title": "Undone",

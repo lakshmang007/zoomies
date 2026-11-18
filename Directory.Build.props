@@ -6,7 +6,7 @@
     <Company>Zoomies</Company>
     <Product>Zoomies</Product>
     <!-- Local builds report this; release builds pass the tag's version (-p:Version=1.2.3). -->
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <!-- English is the source language; translations ship as JSON string tables, not satellite assemblies. -->
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <NoWarn>$(NoWarn);CA1416;SYSLIB1054</NoWarn>

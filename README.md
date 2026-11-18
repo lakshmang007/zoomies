@@ -50,7 +50,8 @@ sort messy folders in one click, and clear out what you don't use — all on you
 
 1. Download **[Zoomies-win-Setup.exe](https://github.com/lakshmang007/zoomies/releases/latest/download/Zoomies-win-Setup.exe)** and run it.
    It installs for your account only — no admin rights needed — and opens Zoomies when it's done.
-2. Press **Ctrl+Alt+Space** and start typing.
+2. Press **Ctrl+Alt+Space** and start typing. If another app already uses that shortcut, Zoomies picks a free one
+   and tells you which.
 
 Zoomies starts with Windows and updates itself quietly. To remove it, use **Settings → Apps → Installed apps**.
 

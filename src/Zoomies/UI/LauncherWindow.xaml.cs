@@ -71,12 +71,14 @@ public partial class LauncherWindow : Window
         Keyboard.Focus(Query);
     }
 
+#if DEBUG
     /// <summary>For screenshots: shows results for a query without stealing focus.</summary>
     internal async Task PrepareSnapshot(string query)
     {
         Query.Text = query;
         await Task.Delay(400);
     }
+#endif
 
     private void DetectTarget()
     {

@@ -58,19 +58,22 @@ public partial class App : Application
         AppDomain.CurrentDomain.UnhandledException += (_, ex) => Log.Error((Exception)ex.ExceptionObject, "Background thread");
         TaskScheduler.UnobservedTaskException += (_, ex) => { Log.Error(ex.Exception, "Task"); ex.SetObserved(); };
 
-        // Demo mode (videos, screenshots): sample folders and separate app data, so no real file names ever appear.
+        string[] args = e.Args;
+#if DEBUG
+        // Developer builds only (videos, screenshots): sample folders and separate app data, so no real file names
+        // ever appear. Release builds have neither switch.
         if (Environment.GetEnvironmentVariable("ZOOMIES_DEMO_ROOT") is { Length: > 0 } demoRoot && Directory.Exists(demoRoot))
         {
             KnownFolders.UseDemoRoot(demoRoot);
             AppPaths.OverrideDataDir(Path.Combine(demoRoot, ".zoomies"));
         }
 
-        string[] args = e.Args;
         if (args.Length >= 2 && args[0] == "--snapshot")
         {
             Snapshot.Run(this, args[1], args.Contains("--dark"));
             return;
         }
+#endif
 
         _instanceMutex = new Mutex(true, MutexName, out bool firstInstance);
         if (!firstInstance)
@@ -324,12 +327,20 @@ public partial class App : Application
         if (_hotkey is null) return;
         if (!Hotkey.TryParse(Settings.Hotkey, out var preferred)) preferred = Hotkey.Default;
         if (_hotkey.Register(preferred)) { UpdateTooltip(); return; }
+        // Another app owns it (the Claude desktop app uses Ctrl+Alt+Space, for one). Move to a free alternative and
+        // remember it, so the user hears about it once, with the shortcut that works, instead of at every start.
+        Hotkey? fallback = null;
         foreach (var alternative in Hotkey.Alternatives)
         {
             if (alternative == preferred || !_hotkey.Register(alternative)) continue;
+            fallback = alternative;
+            Settings.Hotkey = alternative.ToString();
+            SaveSettings();
             break;
         }
-        if (notify) Notify(Loc.T("Notify.HotkeyFailed.Title"), Loc.F("Notify.HotkeyFailed.Body", preferred));
+        if (notify)
+            Notify(Loc.T(fallback is null ? "Notify.HotkeyFailed.Title" : "Notify.HotkeyMoved.Title"),
+                fallback is { } moved ? Loc.F("Notify.HotkeyMoved.Body", preferred, moved) : Loc.F("Notify.HotkeyFailed.Body", preferred));
         UpdateTooltip();
     }
 

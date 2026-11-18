@@ -8,8 +8,10 @@ public static class Shell
     /// <summary>Tells open Explorer windows that a folder's contents changed so they refresh right away.</summary>
     public static void NotifyFolderChanged(string folder)
     {
+        // Only a refresh hint: SHChangeNotify reports no errors, and if shell32 can't be called the files have still
+        // moved correctly, so a failure here must never interrupt the move that asked for it.
         try { SHChangeNotify(SHCNE_UPDATEDIR, SHCNF_PATHW | SHCNF_FLUSHNOWAIT, folder, IntPtr.Zero); }
-        catch (Exception) { }
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException) { }
     }
 
     /// <summary>

@@ -1,3 +1,5 @@
+#if DEBUG
+// Developer tool, left out of release builds.
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -123,3 +125,4 @@ internal static class Snapshot
         encoder.Save(stream);
     }
 }
+#endif
