@@ -34,7 +34,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         }
         OnUi(overlay.HideCaption);
 
-        bool realAppWasRunning = StopRunningZoomies();
+        string? realApp = StopRunningZoomies();
         UseFreeHotkey();
         _guard = ui.Invoke(() => new PrivacyGuard());
         Shell("MinimizeAll");
@@ -66,7 +66,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         {
             recorder?.Stop();
             OnUi(() => { _guard?.Stop(); overlay.CloseAll(); });
-            CleanUp(realAppWasRunning);
+            CleanUp(realApp);
         }
     }
 
@@ -334,17 +334,25 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         Thread.Sleep(1500);
     }
 
-    /// <summary>The user's own Zoomies holds the shortcut; close it for the demo and reopen it afterwards.</summary>
-    private bool StopRunningZoomies()
+    /// <summary>
+    /// The user's own Zoomies holds the shortcut; close it for the demo. Returns the program it was running from
+    /// (usually the installed copy), so that exact program is reopened afterwards.
+    /// </summary>
+    private string? StopRunningZoomies()
     {
-        if (FindWindow(null, HostTitle) == IntPtr.Zero) return false;
+        IntPtr host = FindWindow(null, HostTitle);
+        if (host == IntPtr.Zero) return null;
+        GetWindowThreadProcessId(host, out uint pid);
+        string? running;
+        try { using var process = Process.GetProcessById((int)pid); running = process.MainModule?.FileName; }
+        catch (Exception) { running = null; }
         Process.Start(new ProcessStartInfo(options.App, "--quit") { UseShellExecute = false })?.WaitForExit(10000);
         var sw = Stopwatch.StartNew();
         while (FindWindow(null, HostTitle) != IntPtr.Zero && sw.ElapsedMilliseconds < 10000) Thread.Sleep(200);
-        return true;
+        return running ?? options.App;
     }
 
-    private void CleanUp(bool restartRealApp)
+    private void CleanUp(string? realApp)
     {
         try
         {
@@ -355,7 +363,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
             Process.Start(quit)?.WaitForExit(10000);
             Thread.Sleep(1500);
             Shell("UndoMinimizeALL");
-            if (restartRealApp) Process.Start(new ProcessStartInfo(options.App, "--background") { UseShellExecute = false })?.Dispose();
+            if (realApp is not null) Process.Start(new ProcessStartInfo(realApp, "--background") { UseShellExecute = false })?.Dispose();
         }
         catch (Exception ex) { Console.Error.WriteLine("Cleanup: " + ex.Message); }
     }
@@ -377,6 +385,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern IntPtr FindWindow(string? cls, string? title);
     [DllImport("user32.dll")] private static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
     [DllImport("user32.dll")] private static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
+    [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint processId);
     [DllImport("user32.dll")] private static extern bool RegisterHotKey(IntPtr hwnd, int id, uint mods, uint vk);
     [DllImport("user32.dll")] private static extern bool UnregisterHotKey(IntPtr hwnd, int id);
     [DllImport("user32.dll")] private static extern IntPtr GetDC(IntPtr hwnd);
