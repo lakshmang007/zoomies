@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Zoomies.Core/Zoomies.Core.csproj" />
+    <Project Path="src/Zoomies/Zoomies.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Zoomies.Core.Tests/Zoomies.Core.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/DemoRecorder/DemoRecorder.csproj" />
+  </Folder>
+</Solution>

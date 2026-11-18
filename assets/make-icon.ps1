@@ -1,7 +1,7 @@
-# Draws the FolderPilot icon (blue tile, white folder, navigation arrow) at every size Windows asks for,
+# Draws the Zoomies icon (blue tile, white folder, navigation arrow) at every size Windows asks for,
 # then packs the PNGs into a multi-resolution .ico. Run with Windows PowerShell:
 #   powershell -ExecutionPolicy Bypass -File assets\make-icon.ps1
-param([string]$OutDir = (Join-Path $PSScriptRoot "..\src\FolderPilot\Assets"))
+param([string]$OutDir = (Join-Path $PSScriptRoot "..\src\Zoomies\Assets"))
 
 Add-Type -AssemblyName System.Drawing
 New-Item -ItemType Directory -Force $OutDir | Out-Null
@@ -96,5 +96,5 @@ for ($i = 0; $i -lt $sizes.Count; $i++) {
     $offset += $pngs[$i].Length
 }
 foreach ($p in $pngs) { $w.Write($p) }
-[System.IO.File]::WriteAllBytes((Join-Path $OutDir "FolderPilot.ico"), $out.ToArray())
-Write-Output "Wrote $(Join-Path $OutDir 'FolderPilot.ico') and logo.png"
+[System.IO.File]::WriteAllBytes((Join-Path $OutDir "Zoomies.ico"), $out.ToArray())
+Write-Output "Wrote $(Join-Path $OutDir 'Zoomies.ico') and logo.png"

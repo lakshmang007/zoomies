@@ -188,13 +188,14 @@ internal sealed class Overlay
     /// A plain backdrop over the user's wallpaper and desktop widgets, placed directly beneath
     /// <paramref name="below"/> so the demo windows stay on top of it.
     /// </summary>
-    public void ShowStage(int screenWidth, int screenHeight, IntPtr below)
+    public void ShowStage(int screenWidth, int screenHeight, IntPtr below, bool light = false)
     {
+        var (from, to) = light ? ("#FFFAF9F5", "#FFEFEAF7") : ("#FF05060A", "#FF0E1426"); // ivory → faint violet, or midnight
         var stage = new Window
         {
             WindowStyle = WindowStyle.None, ResizeMode = ResizeMode.NoResize, ShowInTaskbar = false, ShowActivated = false,
             Left = 0, Top = 0, Width = screenWidth, Height = screenHeight,
-            Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString("#FF05060A"), (Color)ColorConverter.ConvertFromString("#FF0E1426"), 35),
+            Background = new LinearGradientBrush((Color)ColorConverter.ConvertFromString(from), (Color)ColorConverter.ConvertFromString(to), 35),
         };
         stage.SourceInitialized += (_, _) =>
         {

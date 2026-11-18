@@ -19,29 +19,23 @@ Claude in Chrome won't type passwords, ID numbers or payment details, and it ask
 
 ## Week 1: get ready
 
-### Step 1 — Choose the new name 🌐 + 🙋
-"Folder Pilot" is already used by another Windows Explorer tool, so the app needs a new name before anything goes public.
-Replace the candidate list if you have your own ideas.
+### Step 1 — Double-check the name 🌐 + 🙋 ✅ named
+The app is called **Zoomies** (it used to be FolderPilot, which was too close to another Windows tool, File Pilot).
+No Windows file tool uses "Zoomies", but run this check before spending money on a domain or the Store listing:
 
 ```text
-I'm launching a free Windows desktop app that helps people find, organize and clean up their files
-(a File Explorer companion). I need a name that is not already taken. Check each candidate:
-Kempt, Tidyfold, Sortful, Pathfinch, Foldwise, Neatnest, Filewisp, Stowly.
-
-For each name:
-1. Search the Microsoft Store website (apps.microsoft.com) for apps with the same or a very similar name.
-2. Search GitHub for repositories or organizations with that name.
-3. Check whether the .com and .app domains look available on a domain registrar's search page. Don't buy anything.
-4. Search the web for existing software products or companies using the name.
-5. Search the Indian trademark public search (ipindiaonline.gov.in) and the USPTO trademark search for
-   live marks in class 9 (software) or class 42 with that name.
-
-Give me one table: name | Store conflict | GitHub conflict | .com / .app | other products | trademark hits | verdict.
-Then recommend the best 2 names and explain why. Don't sign up, buy or submit anything.
+I'm launching a free, open-source Windows desktop app called "Zoomies" that helps people find, organize and
+clean up their files (a File Explorer companion). Check whether the name is safe to use:
+1. Search the Microsoft Store website (apps.microsoft.com) for apps named Zoomies or something very similar.
+2. Search the web for software products or companies called Zoomies.
+3. Check whether zoomies.app and getzoomies.com look available on a domain registrar's search page. Don't buy anything.
+4. Search the USPTO trademark search and the Indian trademark public search (ipindiaonline.gov.in) for live
+   "ZOOMIES" marks in class 9 (software) or class 42.
+Give me a short table of what you found and say whether anything would stop me using the name for this app.
+Don't sign up, buy or submit anything.
 ```
-🙋 Pick the name and tell Claude Code: "rename the app to <name>".
 
-### Step 2 — Decide: open source or not 🙋
+### Step 2 — Decide: open source or not 🙋 ✅ open source, MIT
 Recommended: **open source (MIT licence)**. It builds trust for an app that moves and deletes files, it qualifies for free code signing (SignPath Foundation), volunteers can translate it, and it works as a portfolio piece.
 Tell Claude Code your choice.
 

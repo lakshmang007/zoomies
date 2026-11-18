@@ -4,13 +4,15 @@ using System.Windows;
 
 namespace DemoRecorder;
 
-internal sealed record Options(string Root, string App, string Output, string Ffmpeg, string Encoder, int ScreenWidth, int ScreenHeight, int CountdownSeconds, string Script);
+internal sealed record Options(string Root, string App, string Output, string Ffmpeg, string Encoder, int ScreenWidth, int ScreenHeight, int CountdownSeconds, string Script, string Theme);
 
 /// <summary>
 /// Usage:
 ///   DemoRecorder setup  [--root C:\Demo]                      create the sample PC only
-///   DemoRecorder record [--script demo|ad] [--root C:\Demo] [--app FolderPilot.exe] [--out video.mp4] [--encoder h264_nvenc]
+///   DemoRecorder record [--script demo|ad|inserts] [--theme sand|midnight|system] [--root C:\Demo] [--app Zoomies.exe]
+///                       [--out video.mp4] [--encoder h264_nvenc]
 ///     demo: the feature walkthrough.  ad: the short story-style ad ("Found it.").
+///     inserts: clean clips of the real app for the live-action ad (docs/AD_FLOW.md); --out is a folder.
 /// Recording takes over the mouse and keyboard for about 90 seconds, after a countdown.
 /// </summary>
 internal static class Program
@@ -36,12 +38,12 @@ internal static class Program
         if (command == "probe")
         {
             // Diagnostic: opens the Organize preview in the demo copy and lists what UI Automation can see. No input is sent.
-            string appExe = Arg("--app", Path.Combine(repo, @"src\FolderPilot\bin\Debug\net10.0-windows\FolderPilot.exe"));
+            string appExe = Arg("--app", Path.Combine(repo, @"src\Zoomies\bin\Debug\net10.0-windows\Zoomies.exe"));
             DemoData.Create(root);
             var start = new System.Diagnostics.ProcessStartInfo(appExe, $"--organize \"{Path.Combine(root, "Downloads")}\"") { UseShellExecute = false };
-            start.Environment["FOLDERPILOT_DEMO_ROOT"] = root;
+            start.Environment["ZOOMIES_DEMO_ROOT"] = root;
             System.Diagnostics.Process.Start(start)?.Dispose();
-            IntPtr hub = Ui.WaitWindow(h => Ui.TitleOf(h) == "FolderPilot" && Ui.ClassOf(h).StartsWith("HwndWrapper", StringComparison.Ordinal), "hub", 15000);
+            IntPtr hub = Ui.WaitWindow(h => Ui.TitleOf(h) == "Zoomies" && Ui.ClassOf(h).StartsWith("HwndWrapper", StringComparison.Ordinal), "hub", 15000);
             Thread.Sleep(3000);
             if (args.Contains("--repreview"))
             {
@@ -79,7 +81,7 @@ internal static class Program
                 Console.WriteLine($"total elements: {all.Count}");
             }
             var quit = new System.Diagnostics.ProcessStartInfo(appExe, "--quit") { UseShellExecute = false };
-            quit.Environment["FOLDERPILOT_DEMO_ROOT"] = root;
+            quit.Environment["ZOOMIES_DEMO_ROOT"] = root;
             System.Diagnostics.Process.Start(quit)?.WaitForExit(10000);
             return 0;
         }
@@ -97,18 +99,24 @@ internal static class Program
         }
         var options = new Options(
             Root: root,
-            App: Arg("--app", Path.Combine(repo, @"src\FolderPilot\bin\Debug\net10.0-windows\FolderPilot.exe")),
-            Output: Path.GetFullPath(Arg("--out", Path.Combine(repo, "demo", Arg("--script", "demo") == "ad" ? "FolderPilot-ad.mp4" : "FolderPilot-demo.mp4"))),
+            App: Arg("--app", Path.Combine(repo, @"src\Zoomies\bin\Debug\net10.0-windows\Zoomies.exe")),
+            Output: Path.GetFullPath(Arg("--out", Path.Combine(repo, "demo", Arg("--script", "demo") switch
+            {
+                "ad" => "Zoomies-ad.mp4",
+                "inserts" => "inserts",
+                _ => "Zoomies-demo.mp4",
+            }))),
             Ffmpeg: ffmpeg,
             Encoder: Arg("--encoder", "h264_nvenc"),
             ScreenWidth: GetSystemMetrics(0),
             ScreenHeight: GetSystemMetrics(1),
             CountdownSeconds: int.Parse(Arg("--countdown", "10")),
-            Script: Arg("--script", "demo"));
+            Script: Arg("--script", "demo"),
+            Theme: Arg("--theme", "sand"));
 
         DemoData.Create(root); // fresh files every take, since the demo moves some of them
         var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
-        var overlay = new Overlay(options.ScreenWidth, options.ScreenHeight, Path.Combine(repo, @"src\FolderPilot\Assets\logo.png"));
+        var overlay = new Overlay(options.ScreenWidth, options.ScreenHeight, Path.Combine(repo, @"src\Zoomies\Assets\logo.png"));
         int exitCode = 0;
         // The script runs off the UI thread: UI Automation must not query windows owned by the thread it runs on.
         Task.Run(() =>
@@ -135,7 +143,7 @@ internal static class Program
     private static string FindRepoRoot()
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
-            if (File.Exists(Path.Combine(dir.FullName, "FolderPilot.slnx"))) return dir.FullName;
+            if (File.Exists(Path.Combine(dir.FullName, "Zoomies.slnx"))) return dir.FullName;
         return Directory.GetCurrentDirectory();
     }
 

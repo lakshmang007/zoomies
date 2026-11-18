@@ -5,7 +5,7 @@ namespace DemoRecorder;
 
 /// <summary>
 /// "Found it." — a short story-style ad in four beats (hook, spread, montage, punchline), told with speech bubbles
-/// over the real app. Riya finds a file in a 300-file Downloads folder, everyone around her starts using FolderPilot,
+/// over the real app. Riya finds a file in a 300-file Downloads folder, everyone around her starts using Zoomies,
 /// and it ends on a joke the app answers itself.
 /// </summary>
 internal sealed partial class DemoScript
@@ -44,7 +44,7 @@ internal sealed partial class DemoScript
         Thread.Sleep(1000);
         ShowKeys("Enter");
         Press(Enter);
-        _hub = Ui.WaitWindow(h => Ui.TitleOf(h) == "FolderPilot" && Ui.ClassOf(h).StartsWith("HwndWrapper", StringComparison.Ordinal), "FolderPilot window");
+        _hub = Ui.WaitWindow(h => Ui.TitleOf(h) == "Zoomies" && Ui.ClassOf(h).StartsWith("HwndWrapper", StringComparison.Ordinal), "Zoomies window");
         Ui.Place(_hub, 950, 12, 955, 1015);
         var organize = Ui.WaitElement(_hub, "Organize now", ControlType.Button, timeoutMs: 15000);
         Thread.Sleep(1100);
@@ -105,7 +105,7 @@ internal sealed partial class DemoScript
         OnUi(overlay.HideSay);
         Thread.Sleep(300);
 
-        OnUi(() => overlay.Card("FolderPilot", "Find it. Organize it. Undo anything.", "Free for Windows   ·   Private   ·   Light"));
+        OnUi(() => overlay.Card("Zoomies", "Find it. Organize it. Undo anything.", "Free for Windows   ·   Private   ·   Light"));
         Thread.Sleep(4800);
     }
 

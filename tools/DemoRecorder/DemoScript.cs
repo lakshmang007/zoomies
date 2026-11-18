@@ -13,8 +13,8 @@ namespace DemoRecorder;
 /// </summary>
 internal sealed partial class DemoScript(Options options, Overlay overlay, Dispatcher ui)
 {
-    private const string HostTitle = "FolderPilot.MessageHost.6c1f";
-    private const string LauncherTitle = "FolderPilot Quick Jump";
+    private const string HostTitle = "Zoomies.MessageHost.6c1f";
+    private const string LauncherTitle = "Zoomies Quick Jump";
     private readonly HashSet<IntPtr> _windowsBefore = Ui.TopLevelWindows();
     private readonly List<IntPtr> _opened = [];
     private IntPtr _explorer;
@@ -22,6 +22,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
     private PrivacyGuard? _guard;
     private string _hotkeyText = "Ctrl + Alt + Space";
     private ushort[] _hotkeyKeys = [Ctrl, Alt, Space];
+    private bool _quiet; // no on-screen key hints
 
     public void Run()
     {
@@ -33,7 +34,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         }
         OnUi(overlay.HideCaption);
 
-        bool realAppWasRunning = StopRunningFolderPilot();
+        bool realAppWasRunning = StopRunningZoomies();
         UseFreeHotkey();
         _guard = ui.Invoke(() => new PrivacyGuard());
         Shell("MinimizeAll");
@@ -44,15 +45,20 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
             StartDemoApp();
             OpenExplorer(Path.Combine(options.Root, "Downloads"));
             // Hide the real desktop (wallpaper, widgets) and Explorer's list of the user's own folders.
-            OnUi(() => overlay.ShowStage(options.ScreenWidth, options.ScreenHeight, _explorer));
+            OnUi(() => overlay.ShowStage(options.ScreenWidth, options.ScreenHeight, _explorer, light: options.Theme == "sand"));
             MaskNavigationPane(_explorer);
             // Clicking into Explorer before recording makes an auto-hiding taskbar (with the real user's pinned apps) slide away.
             Focus(_explorer);
             SetCursorAway();
             Thread.Sleep(1500);
 
-            recorder = new ScreenRecorder(options.Ffmpeg, options.Output, options.ScreenWidth, options.ScreenHeight, options.Encoder);
             OnUi(() => _guard!.WatchNewExplorerWindows());
+            if (options.Script == "inserts")
+            {
+                RunInserts(); // records its own short clips
+                return;
+            }
+            recorder = new ScreenRecorder(options.Ffmpeg, options.Output, options.ScreenWidth, options.ScreenHeight, options.Encoder);
             if (options.Script == "ad") RunAd();
             else RunDemo();
         }
@@ -68,7 +74,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
 
     private void RunDemo()
     {
-        OnUi(() => overlay.Card("FolderPilot", "Find, organize and clean your files in one light app — with undo for everything.", "Windows  ·  Private  ·  Free"));
+        OnUi(() => overlay.Card("Zoomies", "Find, organize and clean your files in one light app — with undo for everything.", "Windows  ·  Private  ·  Free"));
         Thread.Sleep(3800);
         OnUi(overlay.HideCard);
         Thread.Sleep(600);
@@ -78,7 +84,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         SceneOrganize();
         SceneClean();
 
-        OnUi(() => overlay.Card("FolderPilot", "Find, organize and clean your files in one light app — with undo for everything.",
+        OnUi(() => overlay.Card("Zoomies", "Find, organize and clean your files in one light app — with undo for everything.",
             "Private and local   ·   Light   ·   Free"));
         Thread.Sleep(4800);
     }
@@ -149,8 +155,8 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         Thread.Sleep(1500);
         ShowKeys("Enter");
         Press(Enter);
-        _hub = Ui.WaitWindow(h => Ui.TitleOf(h) == "FolderPilot"
-            && Ui.ClassOf(h).StartsWith("HwndWrapper", StringComparison.Ordinal), "FolderPilot window");
+        _hub = Ui.WaitWindow(h => Ui.TitleOf(h) == "Zoomies"
+            && Ui.ClassOf(h).StartsWith("HwndWrapper", StringComparison.Ordinal), "Zoomies window");
         Ui.Place(_hub, 950, 12, 955, 1015);
         var apply = Ui.WaitElement(_hub, "Organize now", ControlType.Button);
         Thread.Sleep(1800);
@@ -158,7 +164,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         Caption("Choose where each file type goes", "Search “stl”, then name the folder — it's remembered next time");
         var search = Ui.WaitElement(_hub, n => n.StartsWith("Find a file type", StringComparison.Ordinal), "search box", type: ControlType.Edit);
         Ui.Click(_hub, search);
-        EnsureForeground(_hub, "FolderPilot window");
+        EnsureForeground(_hub, "Zoomies window");
         Type("stl", 150);
         Thread.Sleep(1100);
         var folderBox = Ui.WaitElement(_hub, "Folder for .stl files", ControlType.Edit);
@@ -171,7 +177,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         Ui.Click(_hub, apply);
         Thread.Sleep(2900);
 
-        Caption("Changed your mind? Undo it", "Everything FolderPilot does can be undone");
+        Caption("Changed your mind? Undo it", "Everything Zoomies does can be undone");
         var undo = Ui.WaitElement(_hub, "Undo", ControlType.Button);
         Ui.Click(_hub, undo);
         Thread.Sleep(2500);
@@ -248,8 +254,8 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
     }
 
     /// <summary>
-    /// Another app may own FolderPilot's default shortcut (the Claude desktop app uses Ctrl+Alt+Space).
-    /// Pick the first one that is actually free and give it to the demo copy of FolderPilot.
+    /// Another app may own Zoomies' default shortcut (the Claude desktop app uses Ctrl+Alt+Space).
+    /// Pick the first one that is actually free and give it to the demo copy of Zoomies.
     /// </summary>
     private void UseFreeHotkey()
     {
@@ -264,7 +270,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
             if (!RegisterHotKey(IntPtr.Zero, 0x7A11, c.Mods | 0x4000, c.Vk)) continue;
             UnregisterHotKey(IntPtr.Zero, 0x7A11);
             (_hotkeyText, _hotkeyKeys) = (c.Text, c.Keys);
-            DemoData.SetHotkey(options.Root, c.Setting);
+            DemoData.SetHotkey(options.Root, c.Setting, options.Theme);
             return;
         }
         throw new InvalidOperationException("No free keyboard shortcut for Quick Jump.");
@@ -291,7 +297,10 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
     }
 
     private void Caption(string title, string subtitle) => OnUi(() => overlay.Caption(title, subtitle));
-    private void ShowKeys(string keys) => OnUi(() => overlay.Keys(keys));
+    private void ShowKeys(string keys)
+    {
+        if (!_quiet) OnUi(() => overlay.Keys(keys));
+    }
     private void OnUi(Action action) => ui.Invoke(action);
 
     private bool IsNew(IntPtr h) => !_windowsBefore.Contains(h);
@@ -303,12 +312,12 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
     private void StartDemoApp()
     {
         var start = new ProcessStartInfo(options.App, "--background") { UseShellExecute = false };
-        start.Environment["FOLDERPILOT_DEMO_ROOT"] = options.Root;
+        start.Environment["ZOOMIES_DEMO_ROOT"] = options.Root;
         Process.Start(start)?.Dispose();
         var sw = Stopwatch.StartNew();
         while (FindWindow(null, HostTitle) == IntPtr.Zero)
         {
-            if (sw.ElapsedMilliseconds > 15000) throw new TimeoutException("FolderPilot (demo) did not start.");
+            if (sw.ElapsedMilliseconds > 15000) throw new TimeoutException("Zoomies (demo) did not start.");
             Thread.Sleep(200);
         }
         Thread.Sleep(3500); // first index build of the small demo tree
@@ -325,8 +334,8 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
         Thread.Sleep(1500);
     }
 
-    /// <summary>The user's own FolderPilot holds the shortcut; close it for the demo and reopen it afterwards.</summary>
-    private bool StopRunningFolderPilot()
+    /// <summary>The user's own Zoomies holds the shortcut; close it for the demo and reopen it afterwards.</summary>
+    private bool StopRunningZoomies()
     {
         if (FindWindow(null, HostTitle) == IntPtr.Zero) return false;
         Process.Start(new ProcessStartInfo(options.App, "--quit") { UseShellExecute = false })?.WaitForExit(10000);
@@ -342,7 +351,7 @@ internal sealed partial class DemoScript(Options options, Overlay overlay, Dispa
             if (_hub != IntPtr.Zero) Ui.Close(_hub);
             foreach (IntPtr w in _opened) Ui.Close(w);
             var quit = new ProcessStartInfo(options.App, "--quit") { UseShellExecute = false };
-            quit.Environment["FOLDERPILOT_DEMO_ROOT"] = options.Root;
+            quit.Environment["ZOOMIES_DEMO_ROOT"] = options.Root;
             Process.Start(quit)?.WaitForExit(10000);
             Thread.Sleep(1500);
             Shell("UndoMinimizeALL");

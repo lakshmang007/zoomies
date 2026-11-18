@@ -1,0 +1,78 @@
+<UserControl x:Class="Zoomies.UI.Pages.HomePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:Zoomies.Localization">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+        <Grid Margin="40,32,40,32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+                <ColumnDefinition Width="0*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock x:Name="Greeting" Style="{StaticResource PageTitle}" />
+                <TextBlock Style="{StaticResource PageSubtitle}" Text="{l:T Home.Subtitle}" />
+
+                <Border Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Border Style="{StaticResource IconTile}">
+                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE945;" HorizontalAlignment="Center" Foreground="{DynamicResource Brush.AccentText}" />
+                        </Border>
+                        <StackPanel Grid.Column="1" Margin="16,0,16,0">
+                            <TextBlock Style="{StaticResource SectionTitle}" Margin="0,0,0,4" Text="{l:T Home.QuickJump.Title}" />
+                            <TextBlock x:Name="QuickJumpBody" Style="{StaticResource Caption}" FontSize="13" />
+                        </StackPanel>
+                        <Button Grid.Column="2" Style="{StaticResource PrimaryButton}" Content="{l:T Home.QuickJump.Try}" Click="TryQuickJump_Click" />
+                    </Grid>
+                </Border>
+
+                <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Home.Suggestions}" Margin="0,12,0,10" />
+                <StackPanel x:Name="Scanning" Orientation="Horizontal" Margin="0,0,0,14">
+                    <ProgressBar IsIndeterminate="True" Width="110" Height="4" VerticalAlignment="Center" />
+                    <TextBlock Style="{StaticResource Caption}" FontSize="13" Text="{l:T Home.Scanning}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+                <ItemsControl x:Name="Suggestions" Focusable="False">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource Card}" Padding="18,16" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Style="{StaticResource IconTile}">
+                                        <TextBlock Style="{StaticResource Glyph}" Text="{Binding Glyph}" HorizontalAlignment="Center" Foreground="{DynamicResource Brush.AccentText}" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="16,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" FontSize="15" FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{Binding Body}" Style="{StaticResource Caption}" FontSize="13" Margin="0,3,0,0" />
+                                    </StackPanel>
+                                    <Button Grid.Column="2" Style="{StaticResource SecondaryButton}" Content="{Binding ActionText}" Click="Suggestion_Click" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <Border x:Name="AllTidy" Style="{StaticResource Banner}" Background="{DynamicResource Brush.SuccessSoft}" Margin="0,0,0,14" Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE73E;" Foreground="{DynamicResource Brush.Success}" />
+                        <TextBlock Style="{StaticResource Body}" Text="{l:T Home.AllTidy}" Margin="10,0,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Home.Frequent}" Margin="0,18,0,10" />
+                <WrapPanel x:Name="Frequent" />
+                <TextBlock x:Name="FrequentEmpty" Style="{StaticResource Caption}" FontSize="13" Text="{l:T Home.FrequentEmpty}" Visibility="Collapsed" />
+
+                <Border BorderThickness="0,1,0,0" BorderBrush="{DynamicResource Brush.Divider}" Margin="0,26,0,0" Padding="0,12,0,0">
+                    <TextBlock x:Name="Status" Style="{StaticResource Caption}" />
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

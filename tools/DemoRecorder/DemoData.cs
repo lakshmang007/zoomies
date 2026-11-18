@@ -4,9 +4,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using FolderPilot.Core.Frecency;
-using FolderPilot.Core.Settings;
-using FolderPilot.Core.Storage;
+using Zoomies.Core.Frecency;
+using Zoomies.Core.Settings;
+using Zoomies.Core.Storage;
 
 namespace DemoRecorder;
 
@@ -30,12 +30,12 @@ internal static class DemoData
         }
         Directory.CreateDirectory(root);
         string marker = Path.Combine(root, Marker);
-        File.WriteAllText(marker, "FolderPilot demo data. Safe to delete.");
+        File.WriteAllText(marker, "Zoomies demo data. Safe to delete.");
         File.SetAttributes(marker, FileAttributes.Hidden);
 
         string P(string relative) => Path.Combine(root, relative);
 
-        // Downloads: loose files of every kind, the thing FolderPilot tidies.
+        // Downloads: loose files of every kind, the thing Zoomies tidies.
         Pdf(P(@"Downloads\Lecture 12 - Neural Networks.pdf"), "Lecture 12: Neural Networks", 3);
         Pdf(P(@"Downloads\Internship offer letter.pdf"), "Offer of Internship", 6);
         byte[] resume = PdfBytes("Resume - Software Engineer");
@@ -133,15 +133,15 @@ internal static class DemoData
 
     private static readonly List<(string Path, DateTime Accessed)> AccessTimes = [];
 
-    /// <summary>Gives the demo copy of FolderPilot a Quick Jump shortcut that no other app on this PC is using.</summary>
-    public static void SetHotkey(string root, string hotkey) =>
-        JsonFile.Write(Path.Combine(root, ".folderpilot", "settings.json"),
-            new AppSettings { HasCompletedWelcome = true, Hotkey = hotkey }, CoreJsonContext.Default.AppSettings);
+    /// <summary>Gives the demo copy of Zoomies a Quick Jump shortcut that no other app on this PC is using, and the theme to film.</summary>
+    public static void SetHotkey(string root, string hotkey, string theme) =>
+        JsonFile.Write(Path.Combine(root, ".zoomies", "settings.json"),
+            new AppSettings { HasCompletedWelcome = true, Hotkey = hotkey, Theme = theme }, CoreJsonContext.Default.AppSettings);
 
-    /// <summary>Settings and "learned" folders for the demo copy of FolderPilot, as if it had been used for a few weeks.</summary>
+    /// <summary>Settings and "learned" folders for the demo copy of Zoomies, as if it had been used for a few weeks.</summary>
     private static void WriteAppData(string root)
     {
-        string data = Path.Combine(root, ".folderpilot");
+        string data = Path.Combine(root, ".zoomies");
         Directory.CreateDirectory(data);
         File.SetAttributes(data, FileAttributes.Directory | FileAttributes.Hidden);
         JsonFile.Write(Path.Combine(data, "settings.json"), new AppSettings { HasCompletedWelcome = true }, CoreJsonContext.Default.AppSettings);

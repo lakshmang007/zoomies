@@ -1,0 +1,223 @@
+<UserControl x:Class="Zoomies.UI.Pages.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:Zoomies.Localization">
+    <UserControl.Resources>
+        <!-- Fixed colours: each preview shows its own theme, whatever theme is active. -->
+        <LinearGradientBrush x:Key="PreviewAccentLight" StartPoint="0,0.5" EndPoint="1,0.5">
+            <GradientStop Color="#3367D6" Offset="0" /><GradientStop Color="#7B4FD1" Offset="0.55" /><GradientStop Color="#C2477A" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="PreviewAccentDark" StartPoint="0,0.5" EndPoint="1,0.5">
+            <GradientStop Color="#8AB4F8" Offset="0" /><GradientStop Color="#C58AF9" Offset="0.55" /><GradientStop Color="#F28B82" Offset="1" />
+        </LinearGradientBrush>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+        <Grid Margin="40,32,40,32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="820" />
+                <ColumnDefinition Width="0*" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Style="{StaticResource PageTitle}" Text="{l:T Settings.Title}" Margin="0,0,0,24" />
+
+                <!-- Appearance: each tile is a small picture of the theme, drawn in that theme's own colours. -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Appearance}" />
+                        <TextBlock Style="{StaticResource Caption}" Text="{l:T Settings.Theme.Hint}" Margin="0,0,0,12" />
+                        <WrapPanel>
+                            <RadioButton x:Name="ThemeSystem" Style="{StaticResource ThemeTile}" GroupName="theme" Tag="system"
+                                         Checked="Theme_Checked" AutomationProperties.Name="{l:T Settings.Theme.System}">
+                                <StackPanel>
+                                    <Border Width="140" Height="82" CornerRadius="8" ClipToBounds="True">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Canvas Background="#FAF9F5">
+                                                <Rectangle Canvas.Left="12" Canvas.Top="14" Width="58" Height="26" RadiusX="4" RadiusY="4" Fill="#FFFFFF" Stroke="#ECE9E2" />
+                                                <Rectangle Canvas.Left="12" Canvas.Top="50" Width="34" Height="12" RadiusX="6" RadiusY="6" Fill="{StaticResource PreviewAccentLight}" />
+                                            </Canvas>
+                                            <Canvas Grid.Column="1" Background="#0B0B0F">
+                                                <Rectangle Canvas.Left="0" Canvas.Top="14" Width="58" Height="26" RadiusX="4" RadiusY="4" Fill="#141419" Stroke="#23232B" />
+                                                <Rectangle Canvas.Left="0" Canvas.Top="50" Width="34" Height="12" RadiusX="6" RadiusY="6" Fill="{StaticResource PreviewAccentDark}" />
+                                            </Canvas>
+                                        </Grid>
+                                    </Border>
+                                    <TextBlock Text="{l:T Settings.Theme.System}" Margin="2,8,0,2" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="ThemeSand" Style="{StaticResource ThemeTile}" GroupName="theme" Tag="sand"
+                                         Checked="Theme_Checked" AutomationProperties.Name="{l:T Settings.Theme.Sand}">
+                                <StackPanel>
+                                    <Border Width="140" Height="82" CornerRadius="8" ClipToBounds="True" BorderBrush="#ECE9E2" BorderThickness="1">
+                                        <Canvas>
+                                            <Canvas.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="#FAF9F5" Offset="0" />
+                                                    <GradientStop Color="#EEEBF8" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Canvas.Background>
+                                            <Rectangle Width="30" Height="82" Fill="#00FFFFFF" />
+                                            <Rectangle Canvas.Left="40" Canvas.Top="14" Width="88" Height="30" RadiusX="4" RadiusY="4" Fill="#FFFFFF" Stroke="#ECE9E2" />
+                                            <Rectangle Canvas.Left="48" Canvas.Top="22" Width="50" Height="5" RadiusX="2" RadiusY="2" Fill="#1F1E1D" />
+                                            <Rectangle Canvas.Left="48" Canvas.Top="32" Width="34" Height="4" RadiusX="2" RadiusY="2" Fill="#94928B" />
+                                            <Rectangle Canvas.Left="40" Canvas.Top="54" Width="40" Height="14" RadiusX="7" RadiusY="7" Fill="{StaticResource PreviewAccentLight}" />
+                                        </Canvas>
+                                    </Border>
+                                    <TextBlock Text="{l:T Settings.Theme.Sand}" Margin="2,8,0,2" />
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton x:Name="ThemeMidnight" Style="{StaticResource ThemeTile}" GroupName="theme" Tag="midnight"
+                                         Checked="Theme_Checked" AutomationProperties.Name="{l:T Settings.Theme.Midnight}">
+                                <StackPanel>
+                                    <Border Width="140" Height="82" CornerRadius="8" ClipToBounds="True" BorderBrush="#23232B" BorderThickness="1">
+                                        <Canvas>
+                                            <Canvas.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="#0B0B0F" Offset="0" />
+                                                    <GradientStop Color="#171A2C" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Canvas.Background>
+                                            <Rectangle Width="30" Height="82" Fill="#00000000" />
+                                            <Rectangle Canvas.Left="40" Canvas.Top="14" Width="88" Height="30" RadiusX="4" RadiusY="4" Fill="#141419" Stroke="#23232B" />
+                                            <Rectangle Canvas.Left="48" Canvas.Top="22" Width="50" Height="5" RadiusX="2" RadiusY="2" Fill="#ECECF1" />
+                                            <Rectangle Canvas.Left="48" Canvas.Top="32" Width="34" Height="4" RadiusX="2" RadiusY="2" Fill="#74747E" />
+                                            <Rectangle Canvas.Left="40" Canvas.Top="54" Width="40" Height="14" RadiusX="7" RadiusY="7" Fill="{StaticResource PreviewAccentDark}" />
+                                        </Canvas>
+                                    </Border>
+                                    <TextBlock Text="{l:T Settings.Theme.Midnight}" Margin="2,8,0,2" />
+                                </StackPanel>
+                            </RadioButton>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Quick jump -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.QuickJump}" />
+                        <TextBlock Style="{StaticResource ColumnHeader}" Text="{l:T Settings.Hotkey}" Margin="0,0,0,6" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Name="HotkeyBox" Width="240" FontSize="14" MinHeight="34" VerticalContentAlignment="Center" IsReadOnly="True"
+                                     IsReadOnlyCaretVisible="False" PreviewKeyDown="HotkeyBox_PreviewKeyDown"
+                                     GotKeyboardFocus="HotkeyBox_GotFocus" LostKeyboardFocus="HotkeyBox_LostFocus"
+                                     AutomationProperties.Name="{l:T Settings.Hotkey}" />
+                            <Button x:Name="HotkeySave" Style="{StaticResource SecondaryButton}" Margin="8,0,0,0"
+                                    Content="{l:T Settings.Hotkey.Save}" Click="HotkeySave_Click" IsEnabled="False" />
+                        </StackPanel>
+                        <TextBlock x:Name="HotkeyStatus" Style="{StaticResource Caption}" Margin="0,6,0,10" Text="{l:T Settings.Hotkey.Hint}" />
+                        <CheckBox x:Name="LearnSwitch" Style="{StaticResource Switch}" Content="{l:T Settings.Learn}" Click="Learn_Click" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Windows integration -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Integration}" />
+                        <CheckBox x:Name="StartupSwitch" Style="{StaticResource Switch}" Content="{l:T Settings.Startup}" Click="Startup_Click" />
+                        <CheckBox x:Name="MenuSwitch" Style="{StaticResource Switch}" Content="{l:T Settings.ContextMenu}" Click="Menu_Click" />
+                        <TextBlock Style="{StaticResource Caption}" Text="{l:T Settings.ContextMenu.Note}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Search index -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Index}" />
+                        <TextBlock Style="{StaticResource ColumnHeader}" Text="{l:T Settings.Index.Folders}" Margin="0,0,0,6" />
+                        <ItemsControl x:Name="RootsList" Focusable="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Style="{StaticResource Glyph}" FontSize="14" Text="&#xE8B7;" Foreground="{DynamicResource Brush.AccentText}" />
+                                        <TextBlock Grid.Column="1" Text="{Binding}" Margin="10,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text}" TextTrimming="CharacterEllipsis" />
+                                        <Button Grid.Column="2" Style="{StaticResource SubtleButton}" Content="{l:T Settings.Index.Remove}" Click="RemoveRoot_Click" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock x:Name="DefaultRoots" Style="{StaticResource Body}" Text="{l:T Settings.Index.Default}" Margin="0,2,0,0" />
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,14">
+                            <Button Style="{StaticResource SecondaryButton}" Content="{l:T Settings.Index.Add}" Click="AddRoot_Click" />
+                            <Button x:Name="ResetRoots" Style="{StaticResource SubtleButton}" Content="{l:T Settings.Index.Reset}" Click="ResetRoots_Click" Margin="6,0,0,0" />
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource ColumnHeader}" Text="{l:T Settings.Index.Skip}" Margin="0,0,0,6" />
+                        <TextBox x:Name="SkipBox" FontSize="14" MinHeight="34" VerticalContentAlignment="Center" TextWrapping="Wrap"
+                                 AutomationProperties.Name="{l:T Settings.Index.Skip}" />
+                        <CheckBox x:Name="DotSwitch" Style="{StaticResource Switch}" Content="{l:T Settings.Index.SkipDot}" Margin="0,12,0,6" />
+                        <CheckBox x:Name="HiddenSwitch" Style="{StaticResource Switch}" Content="{l:T Settings.Index.Hidden}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                            <Button Style="{StaticResource PrimaryButton}" Content="{l:T Settings.Index.Apply}" Click="ApplyIndex_Click" />
+                            <TextBlock x:Name="IndexStatus" Style="{StaticResource Caption}" FontSize="13" VerticalAlignment="Center" Margin="14,0,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Organize: the user's own folder names per file type -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Organize}" />
+                        <TextBlock Style="{StaticResource Caption}" Text="{l:T Settings.Organize.Hint}" Margin="0,0,0,10" />
+                        <ItemsControl x:Name="FolderRules" Focusable="False">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="130" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text}" />
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Style="{StaticResource Glyph}" FontSize="12" Text="&#xE72A;" Foreground="{DynamicResource Brush.TextTertiary}" />
+                                            <TextBlock Style="{StaticResource Glyph}" FontSize="14" Text="&#xE8B7;" Margin="10,0,0,0" Foreground="{DynamicResource Brush.AccentText}" />
+                                            <TextBlock Text="{Binding Folder}" Margin="8,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource Brush.Text}" />
+                                        </StackPanel>
+                                        <Button Grid.Column="2" Style="{StaticResource SubtleButton}" Content="{l:T Settings.Index.Remove}" Click="RemoveFolderRule_Click" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock x:Name="FolderRulesEmpty" Style="{StaticResource Body}" Text="{l:T Settings.Organize.Empty}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Automation & performance -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Automation}" />
+                        <CheckBox x:Name="TidySwitch" Style="{StaticResource Switch}" Content="{l:T Settings.AutoTidy}" Click="Tidy_Click" />
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Performance}" Margin="0,18,0,10" />
+                        <CheckBox x:Name="MemorySwitch" Style="{StaticResource Switch}" Content="{l:T Settings.LowMemory}" Click="Memory_Click" />
+                        <TextBlock x:Name="MemoryNow" Style="{StaticResource Caption}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- Privacy & about -->
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.Privacy}" />
+                        <TextBlock Style="{StaticResource Body}" Text="{l:T Settings.Privacy.Body}" />
+                        <TextBlock Style="{StaticResource SectionTitle}" Text="{l:T Settings.About}" Margin="0,18,0,6" />
+                        <TextBlock x:Name="VersionText" Style="{StaticResource Body}" />
+                        <CheckBox x:Name="UpdateSwitch" Style="{StaticResource Switch}" Content="{l:T Settings.AutoUpdate}" Click="Update_Click" Margin="0,12,0,4" />
+                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                            <Button x:Name="CheckUpdates" Style="{StaticResource SecondaryButton}" Content="{l:T Settings.Update.Check}" Click="CheckUpdates_Click" />
+                            <Button x:Name="RestartUpdate" Style="{StaticResource PrimaryButton}" Content="{l:T Settings.Update.Restart}" Click="RestartUpdate_Click"
+                                    Margin="8,0,0,0" Visibility="Collapsed" />
+                            <TextBlock x:Name="UpdateInfo" Style="{StaticResource Caption}" FontSize="13" VerticalAlignment="Center" Margin="14,0,0,0" />
+                        </StackPanel>
+                        <Button Style="{StaticResource SubtleButton}" Content="{l:T Settings.DataFolder}" Click="DataFolder_Click" Margin="-10,10,0,0" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
